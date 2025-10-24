@@ -1814,6 +1814,8 @@ body:not(.homepage) .top-player { display: none; }
     margin: 2rem auto;
     max-width: 800px;
     overflow: hidden;
+    position: relative;
+    z-index: 10;
 }
 
 .player-categories {
