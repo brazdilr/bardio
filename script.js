@@ -684,6 +684,24 @@ window.addEventListener('pageshow', (e) => {
     }
 });
 
+// Additional fallback for GitHub Pages - check after everything is loaded
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        if (!musicPlayerInitialized) {
+            console.log('Final fallback attempt after window load...');
+            const musicPlayer = document.getElementById('music-player');
+            const tracksList = document.getElementById('tracks-list');
+            
+            if (musicPlayer && tracksList) {
+                console.log('Elements found in final fallback, initializing...');
+                initMusicPlayer();
+            } else {
+                console.error('Music player elements still not found after all attempts');
+            }
+        }
+    }, 1000);
+});
+
 // SPA navigation support
 document.addEventListener('swup:contentReplaced', initAll);
 document.addEventListener('turbolinks:load', initAll);
@@ -709,5 +727,52 @@ function setupMutationObserver() {
     });
 }
 
+// Aggressive fallback for GitHub Pages
+function aggressiveInit() {
+    console.log('Aggressive initialization attempt...');
+    const musicPlayer = document.getElementById('music-player');
+    const tracksList = document.getElementById('tracks-list');
+    
+    if (musicPlayer && tracksList && !musicPlayerInitialized) {
+        console.log('Elements found, attempting initialization...');
+        initMusicPlayer();
+    } else if (!musicPlayerInitialized) {
+        console.log('Elements not found, retrying in 100ms...');
+        setTimeout(aggressiveInit, 100);
+    }
+}
+
+// Multiple fallback attempts for GitHub Pages
+let fallbackAttempts = 0;
+const maxFallbackAttempts = 20;
+
+function fallbackInit() {
+    if (musicPlayerInitialized || fallbackAttempts >= maxFallbackAttempts) {
+        return;
+    }
+    
+    fallbackAttempts++;
+    console.log(`Fallback attempt ${fallbackAttempts}/${maxFallbackAttempts}`);
+    
+    const musicPlayer = document.getElementById('music-player');
+    const tracksList = document.getElementById('tracks-list');
+    
+    if (musicPlayer && tracksList) {
+        console.log('Elements found in fallback, initializing...');
+        initMusicPlayer();
+    } else {
+        console.log('Elements not found, scheduling next attempt...');
+        setTimeout(fallbackInit, 200);
+    }
+}
+
 // Setup observer on page load
 document.addEventListener('DOMContentLoaded', setupMutationObserver);
+
+// Aggressive fallback for GitHub Pages
+document.addEventListener('DOMContentLoaded', () => {
+    setTimeout(aggressiveInit, 100);
+    setTimeout(fallbackInit, 500);
+    setTimeout(fallbackInit, 1000);
+    setTimeout(fallbackInit, 2000);
+});
