@@ -589,49 +589,28 @@ class MusicPlayer {
 }
 
 function initMusicPlayer() {
-    // Initialize on both jak-to-funguje and homepage
-    if (window.location.pathname.includes('jak-to-funguje') || window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
-        console.log('Initializing MusicPlayer...');
-        console.log('Current pathname:', window.location.pathname);
-        
-        // Add delay for homepage to ensure DOM is ready
-        const delay = window.location.pathname === '/' || window.location.pathname.includes('index.html') ? 1000 : 100;
-        console.log('Using delay:', delay);
-        
-        setTimeout(() => {
-            try {
-                // Check if elements exist before initializing
-                const playerElement = document.getElementById('music-player');
-                const tracksList = document.getElementById('tracks-list');
-                
-                if (!playerElement || !tracksList) {
-                    console.warn('Elements not found, retrying in 500ms...');
-                    setTimeout(() => {
-                        try {
-                            new MusicPlayer();
-                            console.log('MusicPlayer initialized successfully on retry');
-                        } catch (error) {
-                            console.error('Error initializing MusicPlayer on retry:', error);
-                        }
-                    }, 500);
-                    return;
-                }
-                
-                new MusicPlayer();
-                console.log('MusicPlayer initialized successfully');
-            } catch (error) {
-                console.error('Error initializing MusicPlayer:', error);
-            }
-        }, delay);
+    const playerEl = document.getElementById('music-player');
+    const tracksEl = document.getElementById('tracks-list');
+    if (!playerEl || !tracksEl) return;            // nic nespouštěj, když tu UI není
+    if (window.__musicInitDone) return;            // idempotence
+    window.__musicInitDone = true;
+    try { 
+        new MusicPlayer(); 
+        console.log('MusicPlayer initialized successfully');
+    } catch (e) { 
+        console.error('Error initializing MusicPlayer:', e); 
     }
 }
 
-// Init on DOM ready
+// Unified initialization - only MusicPlayer
 document.addEventListener('DOMContentLoaded', () => {
-    if (!window.__playerInstance) {
-        window.__playerInstance = new AudioPlayer();
-    }
-    initTopPlayer();
     initFAQ();
     initMusicPlayer();
+});
+
+window.addEventListener('pageshow', (e) => { 
+    if (e.persisted) {
+        window.__musicInitDone = false; // Reset flag for bfcache
+        initMusicPlayer(); 
+    }
 });
