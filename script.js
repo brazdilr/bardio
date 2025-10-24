@@ -628,6 +628,9 @@ class MusicPlayer {
 // Global flag to prevent duplicate initialization
 let musicPlayerInitialized = false;
 
+// Chrome detection
+const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
+
 function initMusicPlayer() {
     // Check if already initialized
     if (musicPlayerInitialized) {
@@ -640,6 +643,7 @@ function initMusicPlayer() {
         console.log('Initializing MusicPlayer...');
         console.log('Current pathname:', window.location.pathname);
         console.log('DOM ready state:', document.readyState);
+        console.log('Browser:', isChrome ? 'Chrome' : 'Other');
         
         // Check if elements exist
         const playerElement = document.getElementById('music-player');
@@ -727,6 +731,46 @@ function setupMutationObserver() {
     });
 }
 
+// Chrome-specific MutationObserver
+let chromeMutationObserver = null;
+function setupChromeMutationObserver() {
+    if (!isChrome || chromeMutationObserver) return;
+    
+    chromeMutationObserver = new MutationObserver((mutations) => {
+        const musicPlayer = document.getElementById('music-player');
+        const tracksList = document.getElementById('tracks-list');
+        
+        if (musicPlayer && tracksList && !musicPlayerInitialized) {
+            console.log('Chrome MutationObserver: Elements found, initializing...');
+            initMusicPlayer();
+        }
+    });
+    
+    chromeMutationObserver.observe(document.body, {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ['class', 'id']
+    });
+}
+
+// Chrome-specific aggressive fallback
+function chromeAggressiveInit() {
+    if (!isChrome || musicPlayerInitialized) return;
+    
+    console.log('Chrome-specific aggressive initialization...');
+    const musicPlayer = document.getElementById('music-player');
+    const tracksList = document.getElementById('tracks-list');
+    
+    if (musicPlayer && tracksList) {
+        console.log('Elements found in Chrome fallback, initializing...');
+        initMusicPlayer();
+    } else {
+        console.log('Elements not found in Chrome, retrying...');
+        setTimeout(chromeAggressiveInit, 50);
+    }
+}
+
 // Aggressive fallback for GitHub Pages
 function aggressiveInit() {
     console.log('Aggressive initialization attempt...');
@@ -768,6 +812,35 @@ function fallbackInit() {
 
 // Setup observer on page load
 document.addEventListener('DOMContentLoaded', setupMutationObserver);
+
+// Chrome-specific observer setup
+if (isChrome) {
+    document.addEventListener('DOMContentLoaded', setupChromeMutationObserver);
+}
+
+// Chrome-specific initialization
+if (isChrome) {
+    console.log('Chrome detected, using Chrome-specific initialization...');
+    
+    // Chrome-specific immediate attempt
+    document.addEventListener('DOMContentLoaded', () => {
+        setTimeout(chromeAggressiveInit, 10);
+        setTimeout(chromeAggressiveInit, 50);
+        setTimeout(chromeAggressiveInit, 100);
+        setTimeout(chromeAggressiveInit, 200);
+        setTimeout(chromeAggressiveInit, 500);
+    });
+    
+    // Chrome-specific window load fallback
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            if (!musicPlayerInitialized) {
+                console.log('Chrome window load fallback...');
+                chromeAggressiveInit();
+            }
+        }, 100);
+    });
+}
 
 // Aggressive fallback for GitHub Pages
 document.addEventListener('DOMContentLoaded', () => {
