@@ -455,7 +455,13 @@ class MusicPlayer {
         }
         
         this.setupEventListeners();
-        this.loadCategory('pop');
+        
+        // Detect active category or default to 'pop'
+        const activeTab = document.querySelector('.category-tab.active');
+        const defaultCategory = activeTab ? activeTab.getAttribute('data-category') : 'pop';
+        console.log('Detected active category:', defaultCategory);
+        
+        this.loadCategory(defaultCategory);
         console.log('MusicPlayer init completed');
     }
     
@@ -475,6 +481,7 @@ class MusicPlayer {
     }
     
     loadCategory(category) {
+        console.log('Loading category:', category);
         this.currentCategory = category;
         this.currentTrack = 0;
         
@@ -482,7 +489,12 @@ class MusicPlayer {
         document.querySelectorAll('.category-tab').forEach(tab => {
             tab.classList.remove('active');
         });
-        document.querySelector(`[data-category="${category}"]`).classList.add('active');
+        const activeTab = document.querySelector(`[data-category="${category}"]`);
+        if (activeTab) {
+            activeTab.classList.add('active');
+        } else {
+            console.warn('Active tab not found for category:', category);
+        }
         
         // Load tracks
         this.renderTracks();
@@ -497,6 +509,13 @@ class MusicPlayer {
         
         const tracks = this.tracks[this.currentCategory] || [];
         console.log('Tracks found:', tracks.length);
+        console.log('Available categories:', Object.keys(this.tracks));
+        
+        if (tracks.length === 0) {
+            console.warn('No tracks found for category:', this.currentCategory);
+            this.tracksList.innerHTML = '<div class="empty-state">Žádné skladby nenalezeny</div>';
+            return;
+        }
         
         this.tracksList.innerHTML = tracks.map((track, index) => `
             <div class="track-item" data-index="${index}">
@@ -606,80 +625,89 @@ class MusicPlayer {
     }
 }
 
+// Global flag to prevent duplicate initialization
+let musicPlayerInitialized = false;
+
 function initMusicPlayer() {
+    // Check if already initialized
+    if (musicPlayerInitialized) {
+        console.log('MusicPlayer already initialized, skipping...');
+        return;
+    }
+    
     // Initialize on both jak-to-funguje and homepage
     if (window.location.pathname.includes('jak-to-funguje') || window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
         console.log('Initializing MusicPlayer...');
         console.log('Current pathname:', window.location.pathname);
+        console.log('DOM ready state:', document.readyState);
         
-        // Add delay for homepage to ensure DOM is ready
-        const delay = window.location.pathname === '/' || window.location.pathname.includes('index.html') ? 500 : 100;
-        console.log('Using delay:', delay);
+        // Check if elements exist
+        const playerElement = document.getElementById('music-player');
+        const tracksList = document.getElementById('tracks-list');
         
-        setTimeout(() => {
-            try {
-                // Check if elements exist before initializing
-                const playerElement = document.getElementById('music-player');
-                const tracksList = document.getElementById('tracks-list');
-                
-                if (!playerElement || !tracksList) {
-                    console.warn('Elements not found, retrying in 500ms...');
-                    setTimeout(() => {
-                        try {
-                            new MusicPlayer();
-                            console.log('MusicPlayer initialized successfully on retry');
-                        } catch (error) {
-                            console.error('Error initializing MusicPlayer on retry:', error);
-                        }
-                    }, 500);
-                    return;
-                }
-                
-                new MusicPlayer();
-                console.log('MusicPlayer initialized successfully');
-            } catch (error) {
-                console.error('Error initializing MusicPlayer:', error);
-            }
-        }, delay);
+        console.log('Player element found:', !!playerElement);
+        console.log('Tracks list found:', !!tracksList);
+        
+        if (!playerElement || !tracksList) {
+            console.warn('Elements not found, will retry...');
+            return;
+        }
+        
+        try {
+            new MusicPlayer();
+            musicPlayerInitialized = true;
+            console.log('MusicPlayer initialized successfully');
+        } catch (error) {
+            console.error('Error initializing MusicPlayer:', error);
+        }
     }
 }
 
-// Init on DOM ready
-document.addEventListener('DOMContentLoaded', () => {
+// Idempotent initialization function
+function initAll() {
     if (!window.__playerInstance) {
         window.__playerInstance = new AudioPlayer();
     }
     initTopPlayer();
     initFAQ();
     initMusicPlayer();
-});
+}
 
-// Also try to initialize on window load (fallback)
-window.addEventListener('load', () => {
-    console.log('Window load event fired');
-    // Only initialize if not already done
-    const tracksList = document.querySelector('.music-player .tracks-list');
-    if (tracksList && !tracksList.children.length) {
-        console.log('Retrying MusicPlayer initialization on window load');
-        initMusicPlayer();
+// Multiple initialization triggers
+document.addEventListener('DOMContentLoaded', initAll);
+window.addEventListener('load', initAll);
+window.addEventListener('pageshow', (e) => {
+    if (e.persisted) {
+        console.log('Page restored from bfcache, reinitializing...');
+        musicPlayerInitialized = false; // Reset flag for bfcache
+        initAll();
     }
 });
 
-// MutationObserver fallback for dynamic content
-if (window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
-    const observer = new MutationObserver((mutations) => {
+// SPA navigation support
+document.addEventListener('swup:contentReplaced', initAll);
+document.addEventListener('turbolinks:load', initAll);
+
+// MutationObserver for lazy loading
+let mutationObserver = null;
+function setupMutationObserver() {
+    if (mutationObserver) return;
+    
+    mutationObserver = new MutationObserver((mutations) => {
         const musicPlayer = document.getElementById('music-player');
         const tracksList = document.getElementById('tracks-list');
         
-        if (musicPlayer && tracksList && !tracksList.children.length) {
+        if (musicPlayer && tracksList && !tracksList.children.length && !musicPlayerInitialized) {
             console.log('Music player elements found via MutationObserver, initializing...');
             initMusicPlayer();
-            observer.disconnect();
         }
     });
     
-    observer.observe(document.body, {
+    mutationObserver.observe(document.body, {
         childList: true,
         subtree: true
     });
 }
+
+// Setup observer on page load
+document.addEventListener('DOMContentLoaded', setupMutationObserver);
