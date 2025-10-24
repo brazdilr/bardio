@@ -433,15 +433,11 @@ class MusicPlayer {
     
     init() {
         console.log('MusicPlayer init started');
-        console.log('DOM ready state:', document.readyState);
-        console.log('Current URL:', window.location.href);
-        
         this.playerElement = document.getElementById('music-player');
         console.log('Player element:', this.playerElement);
         
         if (!this.playerElement) {
             console.error('Music player element not found');
-            console.log('Available elements with music-player ID:', document.querySelectorAll('[id="music-player"]'));
             return;
         }
         
@@ -450,18 +446,11 @@ class MusicPlayer {
         
         if (!this.tracksList) {
             console.error('Tracks list element not found');
-            console.log('Available elements with tracks-list ID:', document.querySelectorAll('[id="tracks-list"]'));
             return;
         }
         
         this.setupEventListeners();
-        
-        // Detect active category or default to 'pop'
-        const activeTab = document.querySelector('.category-tab.active');
-        const defaultCategory = activeTab ? activeTab.getAttribute('data-category') : 'pop';
-        console.log('Detected active category:', defaultCategory);
-        
-        this.loadCategory(defaultCategory);
+        this.loadCategory('pop');
         console.log('MusicPlayer init completed');
     }
     
@@ -481,7 +470,6 @@ class MusicPlayer {
     }
     
     loadCategory(category) {
-        console.log('Loading category:', category);
         this.currentCategory = category;
         this.currentTrack = 0;
         
@@ -489,12 +477,7 @@ class MusicPlayer {
         document.querySelectorAll('.category-tab').forEach(tab => {
             tab.classList.remove('active');
         });
-        const activeTab = document.querySelector(`[data-category="${category}"]`);
-        if (activeTab) {
-            activeTab.classList.add('active');
-        } else {
-            console.warn('Active tab not found for category:', category);
-        }
+        document.querySelector(`[data-category="${category}"]`).classList.add('active');
         
         // Load tracks
         this.renderTracks();
@@ -509,13 +492,6 @@ class MusicPlayer {
         
         const tracks = this.tracks[this.currentCategory] || [];
         console.log('Tracks found:', tracks.length);
-        console.log('Available categories:', Object.keys(this.tracks));
-        
-        if (tracks.length === 0) {
-            console.warn('No tracks found for category:', this.currentCategory);
-            this.tracksList.innerHTML = '<div class="empty-state">Žádné skladby nenalezeny</div>';
-            return;
-        }
         
         this.tracksList.innerHTML = tracks.map((track, index) => `
             <div class="track-item" data-index="${index}">
@@ -528,16 +504,7 @@ class MusicPlayer {
         
         console.log('Tracks rendered, setting up click listeners');
         
-        // Add click listeners to entire track items
-        this.tracksList.querySelectorAll('.track-item').forEach(item => {
-            item.addEventListener('click', (e) => {
-                const index = parseInt(item.getAttribute('data-index'));
-                console.log('Track item clicked:', index);
-                this.toggleTrackPlay(index);
-            });
-        });
-        
-        // Add click listeners to play buttons (prevent event bubbling)
+        // Add click listeners to play buttons
         this.tracksList.querySelectorAll('.track-play-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
@@ -600,18 +567,14 @@ class MusicPlayer {
     }
     
     updatePlayButtons() {
-        // Update all play buttons and track items
-        this.tracksList.querySelectorAll('.track-item').forEach((item, index) => {
-            const btn = item.querySelector('.track-play-btn');
-            
+        // Update all play buttons
+        this.tracksList.querySelectorAll('.track-play-btn').forEach((btn, index) => {
             if (index === this.currentTrack && this.isPlaying) {
                 btn.textContent = '⏸';
                 btn.classList.add('playing');
-                item.classList.add('playing');
             } else {
                 btn.textContent = '▶';
                 btn.classList.remove('playing');
-                item.classList.remove('playing');
             }
         });
     }
@@ -625,227 +588,50 @@ class MusicPlayer {
     }
 }
 
-// Global flag to prevent duplicate initialization
-window.musicPlayerInitialized = false;
-
-// Chrome detection
-const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
-
 function initMusicPlayer() {
-    // Check if already initialized
-    if (window.musicPlayerInitialized) {
-        console.log('MusicPlayer already initialized, skipping...');
-        return;
-    }
-    
     // Initialize on both jak-to-funguje and homepage
     if (window.location.pathname.includes('jak-to-funguje') || window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
         console.log('Initializing MusicPlayer...');
         console.log('Current pathname:', window.location.pathname);
-        console.log('DOM ready state:', document.readyState);
-        console.log('Browser:', isChrome ? 'Chrome' : 'Other');
         
-        // Check if elements exist
-        const playerElement = document.getElementById('music-player');
-        const tracksList = document.getElementById('tracks-list');
+        // Add delay for homepage to ensure DOM is ready
+        const delay = window.location.pathname === '/' || window.location.pathname.includes('index.html') ? 1000 : 100;
+        console.log('Using delay:', delay);
         
-        console.log('Player element found:', !!playerElement);
-        console.log('Tracks list found:', !!tracksList);
-        
-        if (!playerElement || !tracksList) {
-            console.warn('Elements not found, will retry...');
-            return;
-        }
-        
-        try {
-            new MusicPlayer();
-            window.musicPlayerInitialized = true;
-            console.log('MusicPlayer initialized successfully');
-        } catch (error) {
-            console.error('Error initializing MusicPlayer:', error);
-        }
+        setTimeout(() => {
+            try {
+                // Check if elements exist before initializing
+                const playerElement = document.getElementById('music-player');
+                const tracksList = document.getElementById('tracks-list');
+                
+                if (!playerElement || !tracksList) {
+                    console.warn('Elements not found, retrying in 500ms...');
+                    setTimeout(() => {
+                        try {
+                            new MusicPlayer();
+                            console.log('MusicPlayer initialized successfully on retry');
+                        } catch (error) {
+                            console.error('Error initializing MusicPlayer on retry:', error);
+                        }
+                    }, 500);
+                    return;
+                }
+                
+                new MusicPlayer();
+                console.log('MusicPlayer initialized successfully');
+            } catch (error) {
+                console.error('Error initializing MusicPlayer:', error);
+            }
+        }, delay);
     }
 }
 
-// Idempotent initialization function
-function initAll() {
+// Init on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
     if (!window.__playerInstance) {
         window.__playerInstance = new AudioPlayer();
     }
     initTopPlayer();
     initFAQ();
     initMusicPlayer();
-}
-
-// Multiple initialization triggers
-document.addEventListener('DOMContentLoaded', initAll);
-window.addEventListener('load', initAll);
-window.addEventListener('pageshow', (e) => {
-    if (e.persisted) {
-        console.log('Page restored from bfcache, reinitializing...');
-        window.musicPlayerInitialized = false; // Reset flag for bfcache
-        initAll();
-    }
-});
-
-// Additional fallback for GitHub Pages - check after everything is loaded
-window.addEventListener('load', () => {
-    setTimeout(() => {
-        if (!window.musicPlayerInitialized) {
-            console.log('Final fallback attempt after window load...');
-            const musicPlayer = document.getElementById('music-player');
-            const tracksList = document.getElementById('tracks-list');
-            
-            if (musicPlayer && tracksList) {
-                console.log('Elements found in final fallback, initializing...');
-                initMusicPlayer();
-            } else {
-                console.error('Music player elements still not found after all attempts');
-            }
-        }
-    }, 1000);
-});
-
-// SPA navigation support
-document.addEventListener('swup:contentReplaced', initAll);
-document.addEventListener('turbolinks:load', initAll);
-
-// MutationObserver for lazy loading
-let mutationObserver = null;
-function setupMutationObserver() {
-    if (mutationObserver) return;
-    
-    mutationObserver = new MutationObserver((mutations) => {
-        const musicPlayer = document.getElementById('music-player');
-        const tracksList = document.getElementById('tracks-list');
-        
-        if (musicPlayer && tracksList && !tracksList.children.length && !window.musicPlayerInitialized) {
-            console.log('Music player elements found via MutationObserver, initializing...');
-            initMusicPlayer();
-        }
-    });
-    
-    mutationObserver.observe(document.body, {
-        childList: true,
-        subtree: true
-    });
-}
-
-// Chrome-specific MutationObserver
-let chromeMutationObserver = null;
-function setupChromeMutationObserver() {
-    if (!isChrome || chromeMutationObserver) return;
-    
-    chromeMutationObserver = new MutationObserver((mutations) => {
-        const musicPlayer = document.getElementById('music-player');
-        const tracksList = document.getElementById('tracks-list');
-        
-        if (musicPlayer && tracksList && !window.musicPlayerInitialized) {
-            console.log('Chrome MutationObserver: Elements found, initializing...');
-            initMusicPlayer();
-        }
-    });
-    
-    chromeMutationObserver.observe(document.body, {
-        childList: true,
-        subtree: true,
-        attributes: true,
-        attributeFilter: ['class', 'id']
-    });
-}
-
-// Chrome-specific aggressive fallback
-function chromeAggressiveInit() {
-    if (!isChrome || window.musicPlayerInitialized) return;
-    
-    console.log('Chrome-specific aggressive initialization...');
-    const musicPlayer = document.getElementById('music-player');
-    const tracksList = document.getElementById('tracks-list');
-    
-    if (musicPlayer && tracksList) {
-        console.log('Elements found in Chrome fallback, initializing...');
-        initMusicPlayer();
-    } else {
-        console.log('Elements not found in Chrome, retrying...');
-        setTimeout(chromeAggressiveInit, 50);
-    }
-}
-
-// Aggressive fallback for GitHub Pages
-function aggressiveInit() {
-    console.log('Aggressive initialization attempt...');
-    const musicPlayer = document.getElementById('music-player');
-    const tracksList = document.getElementById('tracks-list');
-    
-    if (musicPlayer && tracksList && !window.musicPlayerInitialized) {
-        console.log('Elements found, attempting initialization...');
-        initMusicPlayer();
-    } else if (!musicPlayerInitialized) {
-        console.log('Elements not found, retrying in 100ms...');
-        setTimeout(aggressiveInit, 100);
-    }
-}
-
-// Multiple fallback attempts for GitHub Pages
-let fallbackAttempts = 0;
-const maxFallbackAttempts = 20;
-
-function fallbackInit() {
-    if (musicPlayerInitialized || fallbackAttempts >= maxFallbackAttempts) {
-        return;
-    }
-    
-    fallbackAttempts++;
-    console.log(`Fallback attempt ${fallbackAttempts}/${maxFallbackAttempts}`);
-    
-    const musicPlayer = document.getElementById('music-player');
-    const tracksList = document.getElementById('tracks-list');
-    
-    if (musicPlayer && tracksList) {
-        console.log('Elements found in fallback, initializing...');
-        initMusicPlayer();
-    } else {
-        console.log('Elements not found, scheduling next attempt...');
-        setTimeout(fallbackInit, 200);
-    }
-}
-
-// Setup observer on page load
-document.addEventListener('DOMContentLoaded', setupMutationObserver);
-
-// Chrome-specific observer setup
-if (isChrome) {
-    document.addEventListener('DOMContentLoaded', setupChromeMutationObserver);
-}
-
-// Chrome-specific initialization
-if (isChrome) {
-    console.log('Chrome detected, using Chrome-specific initialization...');
-    
-    // Chrome-specific immediate attempt
-    document.addEventListener('DOMContentLoaded', () => {
-        setTimeout(chromeAggressiveInit, 10);
-        setTimeout(chromeAggressiveInit, 50);
-        setTimeout(chromeAggressiveInit, 100);
-        setTimeout(chromeAggressiveInit, 200);
-        setTimeout(chromeAggressiveInit, 500);
-    });
-    
-    // Chrome-specific window load fallback
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            if (!window.musicPlayerInitialized) {
-                console.log('Chrome window load fallback...');
-                chromeAggressiveInit();
-            }
-        }, 100);
-    });
-}
-
-// Aggressive fallback for GitHub Pages
-document.addEventListener('DOMContentLoaded', () => {
-    setTimeout(aggressiveInit, 100);
-    setTimeout(fallbackInit, 500);
-    setTimeout(fallbackInit, 1000);
-    setTimeout(fallbackInit, 2000);
 });
