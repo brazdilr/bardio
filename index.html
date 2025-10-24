@@ -184,6 +184,44 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Inline script for immediate initialization -->
+            <script>
+                (function() {
+                    console.log('Inline script: Initializing music player immediately...');
+                    
+                    // Wait for DOM to be ready
+                    function initWhenReady() {
+                        const musicPlayer = document.getElementById('music-player');
+                        const tracksList = document.getElementById('tracks-list');
+                        
+                        if (musicPlayer && tracksList) {
+                            console.log('Inline script: Elements found, initializing...');
+                            
+                            // Initialize immediately if not already done
+                            if (typeof window.musicPlayerInitialized === 'undefined' || !window.musicPlayerInitialized) {
+                                try {
+                                    // Call the main initialization function
+                                    if (typeof initMusicPlayer === 'function') {
+                                        initMusicPlayer();
+                                    } else {
+                                        console.log('Inline script: initMusicPlayer not available yet, retrying...');
+                                        setTimeout(initWhenReady, 100);
+                                    }
+                                } catch (error) {
+                                    console.error('Inline script: Error initializing:', error);
+                                }
+                            }
+                        } else {
+                            console.log('Inline script: Elements not found, retrying...');
+                            setTimeout(initWhenReady, 100);
+                        }
+                    }
+                    
+                    // Start immediately
+                    initWhenReady();
+                })();
+            </script>
         </div>
     </section>
 
