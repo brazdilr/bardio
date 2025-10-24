@@ -1868,6 +1868,7 @@ body:not(.homepage) .top-player { display: none; }
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.2s ease;
+    user-select: none;
 }
 
 .track-item:hover {
@@ -1875,6 +1876,16 @@ body:not(.homepage) .top-player { display: none; }
     border-color: #0ea5e9;
     transform: translateY(-1px);
     box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
+}
+
+.track-item.playing {
+    background: #fef2f2;
+    border-color: #dc2626;
+}
+
+.track-item.playing:hover {
+    background: #fee2e2;
+    border-color: #b91c1c;
 }
 
 .track-info {
@@ -1918,6 +1929,13 @@ body:not(.homepage) .top-player { display: none; }
 
 .track-play-btn.playing:hover {
     background: #b91c1c;
+}
+
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: #64748b;
+    font-style: italic;
 }
 
 /* Responsive design */
