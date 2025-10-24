@@ -432,21 +432,38 @@ class MusicPlayer {
     }
     
     init() {
+        console.log('MusicPlayer init started');
         this.playerElement = document.getElementById('music-player');
-        if (!this.playerElement) return;
+        console.log('Player element:', this.playerElement);
+        
+        if (!this.playerElement) {
+            console.error('Music player element not found');
+            return;
+        }
         
         this.tracksList = document.getElementById('tracks-list');
+        console.log('Tracks list element:', this.tracksList);
+        
+        if (!this.tracksList) {
+            console.error('Tracks list element not found');
+            return;
+        }
         
         this.setupEventListeners();
         this.loadCategory('pop');
+        console.log('MusicPlayer init completed');
     }
     
     setupEventListeners() {
+        console.log('Setting up event listeners');
         // Category tabs
         const categoryTabs = document.querySelectorAll('.category-tab');
+        console.log('Found category tabs:', categoryTabs.length);
+        
         categoryTabs.forEach(tab => {
             tab.addEventListener('click', () => {
                 const category = tab.getAttribute('data-category');
+                console.log('Category clicked:', category);
                 this.loadCategory(category);
             });
         });
@@ -467,9 +484,15 @@ class MusicPlayer {
     }
     
     renderTracks() {
-        if (!this.tracksList) return;
+        console.log('Rendering tracks for category:', this.currentCategory);
+        if (!this.tracksList) {
+            console.error('Tracks list not found');
+            return;
+        }
         
         const tracks = this.tracks[this.currentCategory] || [];
+        console.log('Tracks found:', tracks.length);
+        
         this.tracksList.innerHTML = tracks.map((track, index) => `
             <div class="track-item" data-index="${index}">
                 <div class="track-info">
@@ -479,11 +502,14 @@ class MusicPlayer {
             </div>
         `).join('');
         
+        console.log('Tracks rendered, setting up click listeners');
+        
         // Add click listeners to play buttons
         this.tracksList.querySelectorAll('.track-play-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
                 const index = parseInt(btn.getAttribute('data-index'));
+                console.log('Track play button clicked:', index);
                 this.toggleTrackPlay(index);
             });
         });
@@ -565,7 +591,21 @@ class MusicPlayer {
 function initMusicPlayer() {
     // Initialize on both jak-to-funguje and homepage
     if (window.location.pathname.includes('jak-to-funguje') || window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
-        new MusicPlayer();
+        console.log('Initializing MusicPlayer...');
+        console.log('Current pathname:', window.location.pathname);
+        
+        // Add delay for homepage to ensure DOM is ready
+        const delay = window.location.pathname === '/' || window.location.pathname.includes('index.html') ? 500 : 100;
+        console.log('Using delay:', delay);
+        
+        setTimeout(() => {
+            try {
+                new MusicPlayer();
+                console.log('MusicPlayer initialized successfully');
+            } catch (error) {
+                console.error('Error initializing MusicPlayer:', error);
+            }
+        }, delay);
     }
 }
 
