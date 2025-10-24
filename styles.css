@@ -1587,9 +1587,6 @@ body {
     color: white;
 }
 
-.service-content {
-    space-y: 1.5rem;
-}
 
 .service-feature {
     margin-bottom: 1.5rem;
@@ -1786,6 +1783,153 @@ body {
 
 /* Thin sticky top player */
 .top-player { position: sticky; top: 64px; z-index: 95; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(15,23,42,0.08); }
+
+/* Hide top player on jak-to-funguje page */
+body:not(.homepage) .top-player { display: none; }
+
+/* Music section on homepage */
+.music-section {
+    padding: 4rem 0;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+}
+
+.music-section .section-title {
+    text-align: center;
+    margin-bottom: 1rem;
+    color: #1e293b;
+}
+
+.music-section .section-subtitle {
+    text-align: center;
+    color: #64748b;
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+}
+
+/* Zjednodušený přehrávač */
+.music-player {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    margin: 2rem auto;
+    max-width: 800px;
+    overflow: hidden;
+}
+
+.player-categories {
+    padding: 1.5rem;
+}
+
+.category-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.category-tab {
+    background: #f1f5f9;
+    border: 1px solid #e2e8f0;
+    color: #64748b;
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.category-tab:hover {
+    background: #e2e8f0;
+    color: #475569;
+}
+
+.category-tab.active {
+    background: #0ea5e9;
+    color: white;
+    border-color: #0ea5e9;
+}
+
+.tracks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.track-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.track-item:hover {
+    background: #f1f5f9;
+    border-color: #0ea5e9;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 8px rgba(14, 165, 233, 0.1);
+}
+
+.track-info {
+    flex: 1;
+}
+
+.track-title {
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 0.25rem;
+}
+
+.track-duration {
+    font-size: 0.85rem;
+    color: #64748b;
+}
+
+.track-play-btn {
+    background: #0ea5e9;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.7rem;
+    transition: all 0.2s ease;
+}
+
+.track-play-btn:hover {
+    background: #0284c7;
+    transform: scale(1.05);
+}
+
+.track-play-btn.playing {
+    background: #dc2626;
+}
+
+.track-play-btn.playing:hover {
+    background: #b91c1c;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .category-tabs {
+        justify-content: center;
+    }
+    
+    .track-item {
+        flex-direction: column;
+        gap: 0.75rem;
+        text-align: center;
+    }
+}
 .top-player-container { max-width: 1200px; margin: 0 auto; padding: 0.4rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 .top-player-left { display: flex; align-items: center; gap: 0.5rem; min-width: 0; }
 .tp-btn { background: none; border: 1px solid rgba(2,132,199,0.25); color: var(--primary-dark); border-radius: 999px; padding: 0.2rem 0.45rem; cursor: pointer; font-size: 0.85rem; }
