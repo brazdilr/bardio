@@ -433,11 +433,15 @@ class MusicPlayer {
     
     init() {
         console.log('MusicPlayer init started');
+        console.log('DOM ready state:', document.readyState);
+        console.log('Current URL:', window.location.href);
+        
         this.playerElement = document.getElementById('music-player');
         console.log('Player element:', this.playerElement);
         
         if (!this.playerElement) {
             console.error('Music player element not found');
+            console.log('Available elements with music-player ID:', document.querySelectorAll('[id="music-player"]'));
             return;
         }
         
@@ -446,6 +450,7 @@ class MusicPlayer {
         
         if (!this.tracksList) {
             console.error('Tracks list element not found');
+            console.log('Available elements with tracks-list ID:', document.querySelectorAll('[id="tracks-list"]'));
             return;
         }
         
@@ -613,6 +618,23 @@ function initMusicPlayer() {
         
         setTimeout(() => {
             try {
+                // Check if elements exist before initializing
+                const playerElement = document.getElementById('music-player');
+                const tracksList = document.getElementById('tracks-list');
+                
+                if (!playerElement || !tracksList) {
+                    console.warn('Elements not found, retrying in 500ms...');
+                    setTimeout(() => {
+                        try {
+                            new MusicPlayer();
+                            console.log('MusicPlayer initialized successfully on retry');
+                        } catch (error) {
+                            console.error('Error initializing MusicPlayer on retry:', error);
+                        }
+                    }, 500);
+                    return;
+                }
+                
                 new MusicPlayer();
                 console.log('MusicPlayer initialized successfully');
             } catch (error) {
@@ -631,3 +653,33 @@ document.addEventListener('DOMContentLoaded', () => {
     initFAQ();
     initMusicPlayer();
 });
+
+// Also try to initialize on window load (fallback)
+window.addEventListener('load', () => {
+    console.log('Window load event fired');
+    // Only initialize if not already done
+    const tracksList = document.querySelector('.music-player .tracks-list');
+    if (tracksList && !tracksList.children.length) {
+        console.log('Retrying MusicPlayer initialization on window load');
+        initMusicPlayer();
+    }
+});
+
+// MutationObserver fallback for dynamic content
+if (window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
+    const observer = new MutationObserver((mutations) => {
+        const musicPlayer = document.getElementById('music-player');
+        const tracksList = document.getElementById('tracks-list');
+        
+        if (musicPlayer && tracksList && !tracksList.children.length) {
+            console.log('Music player elements found via MutationObserver, initializing...');
+            initMusicPlayer();
+            observer.disconnect();
+        }
+    });
+    
+    observer.observe(document.body, {
+        childList: true,
+        subtree: true
+    });
+}
