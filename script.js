@@ -1,438 +1,633 @@
-/* =============================================
-   Navigace – hamburger
-============================================= */
-(() => {
-  const hamburger = document.getElementById('hamburger');
-  const navMenu = document.getElementById('nav-menu');
-  if (hamburger && navMenu) {
-    hamburger.addEventListener('click', () => navMenu.classList.toggle('active'));
-    document.querySelectorAll('.nav-link').forEach(link => {
-      link.addEventListener('click', () => navMenu.classList.remove('active'));
+// Mobile menu toggle
+const hamburger = document.getElementById('hamburger');
+const navMenu = document.getElementById('nav-menu');
+
+hamburger.addEventListener('click', () => {
+    navMenu.classList.toggle('active');
+});
+
+// Close mobile menu when clicking on a link
+document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+        navMenu.classList.remove('active');
     });
-  }
-})();
+});
 
-/* =============================================
-   Audio – jednotný přehrávač s více UI vstupy
-   – zvládá: top bar ovládání, hero tlačítko, 
-     kategoriální seznam skladeb (jak-to-funguje)
-============================================= */
-class AudioController {
-  constructor(config) {
-    // playlisty podle kategorií (mohou se rozšířit)
-    this.catalog = config?.catalog || {
-      pop: [
-        { title: 'Popová píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3' },
-        { title: 'Popová píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3' },
-        { title: 'Popová píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3' }
-      ],
-      akusticka: [
-        { title: 'Akustická píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3' },
-        { title: 'Akustická píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3' },
-        { title: 'Akustická píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3' }
-      ],
-      detska: [
-        { title: 'Dětská píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3' },
-        { title: 'Dětská píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3' },
-        { title: 'Dětská píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3' }
-      ],
-      svatebni: [
-        { title: 'Svatební píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3' },
-        { title: 'Svatební píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3' },
-        { title: 'Svatební píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3' }
-      ]
-    };
-
-    // výchozí stav
-    this.category = Object.keys(this.catalog)[0] || 'pop';
-    this.queue = [...(this.catalog[this.category] || [])];
-    this.index = 0;
-    this.isPlaying = false;
-    this.isMuted = false;
-
-    // Audio element (instancujeme jen jednou)
-    this.audio = new Audio();
-    this.audio.preload = 'metadata';
-
-    // === UI uzly – jsou volitelné, proto vždy ověřujeme ===
-    // Hlavní/hero ovládání
-    this.el = {
-      play: document.getElementById('play-btn') || null,
-      prev: document.getElementById('prev-btn') || null,
-      next: document.getElementById('next-btn') || null,
-      mute: document.getElementById('mute-btn') || null,
-      heroPlay: document.getElementById('hero-play-btn') || null,
-      hide: document.getElementById('hide-player') || null,
-      floatBtn: document.getElementById('floating-audio-btn') || null,
-      playerWrap: document.getElementById('audio-player') || null,
-      progress: document.getElementById('progress-bar') || null,
-      curTime: document.getElementById('current-time') || null,
-      duration: document.getElementById('duration') || null,
-      title: document.querySelector('.track-title') || null,
-      meta: document.querySelector('.track-meta') || null
-    };
-
-    // Top player
-    this.top = {
-      prev: document.getElementById('tp-prev') || null,
-      play: document.getElementById('tp-play') || null,
-      next: document.getElementById('tp-next') || null,
-      title: document.getElementById('tp-title') || null,
-      tabsWrap: document.getElementById('tp-tabs') || null
-    };
-
-    // Jak-to-funguje (seznam + záložky)
-    this.list = {
-      root: document.getElementById('music-player') || null,
-      tracks: document.getElementById('tracks-list') || null,
-      categoryTabs: Array.from(document.querySelectorAll('.category-tab'))
-    };
-
-    this._bindCoreEvents();
-    this._bindUiEvents();
-    this._renderCategory(this.category); // naplní UI (title, list, tabs)
-    this._loadAndMaybeAutoplay(false);
-  }
-
-  /* -----------------------------
-     Vnitřní pomocné funkce
-  ----------------------------- */
-  _fmt(sec) {
-    if (!Number.isFinite(sec)) return '0:00';
-    const m = Math.floor(sec / 60);
-    const s = Math.floor(sec % 60).toString().padStart(2, '0');
-    return `${m}:${s}`;
-  }
-
-  _currentTrack() {
-    return this.queue[this.index];
-  }
-
-  _syncButtonsPlayingState() {
-    const playing = this.isPlaying;
-    const setText = (btn, playTxt = '▶', pauseTxt = '⏸') => { if (btn) btn.textContent = playing ? pauseTxt : playTxt; };
-    setText(this.el.play);
-    setText(this.el.heroPlay, '▶ Přehrát ukázky', '⏸ Pozastavit');
-    setText(this.top.play);
-
-    // zvýraznění položek v seznamu
-    if (this.list.tracks) {
-      this.list.tracks.querySelectorAll('.track-item').forEach((item, i) => {
-        const btn = item.querySelector('.track-play-btn');
-        if (!btn) return;
-        if (i === this.index && playing) {
-          btn.textContent = '⏸';
-          item.classList.add('playing');
-        } else {
-          btn.textContent = '▶';
-          item.classList.remove('playing');
+// Audio Player functionality
+class AudioPlayer {
+    constructor() {
+        this.currentTrack = 0;
+        this.isPlaying = false;
+        this.isMuted = false;
+        this.volume = 1;
+        this.currentTime = 0;
+        this.duration = 30; // Default duration
+        
+        this.tracks = [
+            { title: 'Ukázka 1 - Popová píseň', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 30 },
+            { title: 'Ukázka 2 - Akustická píseň', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 30 },
+            { title: 'Ukázka 3 - Dětská píseň', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 25 }
+        ];
+        
+        this.init();
+    }
+    
+    setupAudioEvents() {
+        if (!this.audioElement) return;
+        
+        // Aktualizuj progress bar při přehrávání
+        this.audioElement.addEventListener('timeupdate', () => {
+            this.currentTime = this.audioElement.currentTime;
+            this.duration = this.audioElement.duration || this.duration;
+            this.updateProgress();
+        });
+        
+        // Automaticky přejdi na další track
+        this.audioElement.addEventListener('ended', () => {
+            this.nextTrack();
+        });
+        
+        // Zpracuj chyby
+        this.audioElement.addEventListener('error', (e) => {
+            console.log('Audio error:', e);
+            this.playSimulated();
+        });
+    }
+    
+    init() {
+        // Safely query elements (may be hidden or absent in v2)
+        this.playBtn = document.getElementById('play-btn') || null;
+        this.prevBtn = document.getElementById('prev-btn') || null;
+        this.nextBtn = document.getElementById('next-btn') || null;
+        this.muteBtn = document.getElementById('mute-btn') || null;
+        this.hidePlayerBtn = document.getElementById('hide-player') || null;
+        this.progressBar = document.getElementById('progress-bar') || null;
+        this.currentTimeEl = document.getElementById('current-time') || { textContent: '' };
+        this.durationEl = document.getElementById('duration') || { textContent: '' };
+        this.trackTitle = document.querySelector('.track-title') || { textContent: '' };
+        this.trackMeta = document.querySelector('.track-meta') || { textContent: '' };
+        this.audioPlayer = document.getElementById('audio-player') || null;
+        this.floatingBtn = document.getElementById('floating-audio-btn') || null;
+        this.heroPlayBtn = document.getElementById('hero-play-btn') || null;
+        
+        this.setupEventListeners();
+        this.updateTrackInfo();
+    }
+    
+    setupEventListeners() {
+        if (this.playBtn) this.playBtn.addEventListener('click', () => this.togglePlayPause());
+        if (this.prevBtn) this.prevBtn.addEventListener('click', () => this.previousTrack());
+        if (this.nextBtn) this.nextBtn.addEventListener('click', () => this.nextTrack());
+        if (this.muteBtn) this.muteBtn.addEventListener('click', () => this.toggleMute());
+        if (this.hidePlayerBtn) this.hidePlayerBtn.addEventListener('click', () => this.hidePlayer());
+        if (this.floatingBtn) this.floatingBtn.addEventListener('click', () => this.showPlayer());
+        if (this.heroPlayBtn) this.heroPlayBtn.addEventListener('click', () => this.togglePlayPause());
+        
+        if (this.progressBar) {
+            this.progressBar.addEventListener('input', (e) => {
+                this.currentTime = (e.target.value / 100) * this.duration;
+                this.updateProgress();
+            });
         }
-      });
+        
+        // Simulate audio playback
+        this.audioInterval = null;
     }
-  }
-
-  _updateMetaUi() {
-    const t = this._currentTrack();
-    if (!t) return;
-    if (this.el.title) this.el.title.textContent = t.title || 'Ukázka písničky';
-    if (this.top.title) this.top.title.textContent = t.title || 'Ukázka písničky';
-    if (this.el.meta && Number.isFinite(this.audio.duration)) {
-      this.el.meta.textContent = `Ukázka písničky • ${this._fmt(this.audio.duration)}`;
+    
+    togglePlayPause() {
+        if (this.isPlaying) {
+            this.pause();
+        } else {
+            this.play();
+        }
     }
-  }
-
-  _bindCoreEvents() {
-    this.audio.addEventListener('loadedmetadata', () => {
-      if (this.el.duration) this.el.duration.textContent = this._fmt(this.audio.duration);
-      this._updateMetaUi();
-    });
-
-    this.audio.addEventListener('timeupdate', () => {
-      if (this.el.curTime) this.el.curTime.textContent = this._fmt(this.audio.currentTime);
-      if (this.el.progress && Number.isFinite(this.audio.duration)) {
-        const pct = (this.audio.currentTime / this.audio.duration) * 100;
-        this.el.progress.value = pct;
-      }
-    });
-
-    this.audio.addEventListener('ended', () => this.next());
-
-    this.audio.addEventListener('error', () => {
-      // jednoduchý fallback: přeskoč na další stopu
-      this.next();
-    });
-  }
-
-  _bindUiEvents() {
-    const on = (el, ev, fn) => el && el.addEventListener(ev, fn);
-
-    // hlavní ovládání
-    on(this.el.play, 'click', () => this.toggle());
-    on(this.el.prev, 'click', () => this.prev());
-    on(this.el.next, 'click', () => this.next());
-    on(this.el.mute, 'click', () => this.muteToggle());
-
-    // hero tlačítko
-    on(this.el.heroPlay, 'click', () => this.toggle());
-
-    // schování/zobrazení plovoucího přehrávače
-    on(this.el.hide, 'click', () => {
-      if (this.el.playerWrap) this.el.playerWrap.style.display = 'none';
-      if (this.el.floatBtn) this.el.floatBtn.style.display = 'block';
-    });
-    on(this.el.floatBtn, 'click', () => {
-      if (this.el.playerWrap) this.el.playerWrap.style.display = 'block';
-      if (this.el.floatBtn) this.el.floatBtn.style.display = 'none';
-    });
-
-    // seeking (range input)
-    if (this.el.progress) {
-      // plynulé posouvání během "input"
-      this.el.progress.addEventListener('input', (e) => {
-        if (!Number.isFinite(this.audio.duration)) return;
-        const pct = Number(e.target.value) / 100;
-        this.audio.currentTime = Math.max(0, Math.min(this.audio.duration * pct, this.audio.duration));
-      });
-      // jistota po "change"
-      this.el.progress.addEventListener('change', (e) => {
-        if (!Number.isFinite(this.audio.duration)) return;
-        const pct = Number(e.target.value) / 100;
-        this.audio.currentTime = Math.max(0, Math.min(this.audio.duration * pct, this.audio.duration));
-      });
+    
+    play() {
+        const currentTrack = this.tracks[this.currentTrack];
+        
+        // Pokud má track audio soubor, použij HTML5 Audio API
+        if (currentTrack.file) {
+            if (!this.audioElement) {
+                this.audioElement = new Audio();
+                this.setupAudioEvents();
+            }
+            
+            this.audioElement.src = currentTrack.file;
+            this.audioElement.volume = this.isMuted ? 0 : this.volume;
+            this.audioElement.play().catch(error => {
+                console.log('Audio playback failed:', error);
+                // Fallback na simulaci pokud se audio nepodaří načíst
+                this.playSimulated();
+            });
+        } else {
+            // Fallback na simulaci pro tracky bez souborů
+            this.playSimulated();
+        }
+        
+        this.isPlaying = true;
+        this.playBtn.textContent = '⏸';
+        this.heroPlayBtn.textContent = '⏸ Pozastavit';
     }
-
-    // top player ovládání
-    on(this.top.prev, 'click', () => this.prev());
-    on(this.top.play, 'click', () => this.toggle());
-    on(this.top.next, 'click', () => this.next());
-
-    // top player tabs (data-category na .tp-tab)
-    if (this.top.tabsWrap) {
-      this.top.tabsWrap.querySelectorAll('.tp-tab').forEach(tab => {
-        tab.addEventListener('click', () => {
-          this._switchCategory(tab.getAttribute('data-category'));
-          this.top.tabsWrap.querySelectorAll('.tp-tab').forEach(t => t.classList.remove('active'));
-          tab.classList.add('active');
-        });
-      });
+    
+    playSimulated() {
+        // Simulate audio playback
+        this.audioInterval = setInterval(() => {
+            if (this.currentTime < this.duration) {
+                this.currentTime += 0.1;
+                this.updateProgress();
+            } else {
+                this.nextTrack();
+            }
+        }, 100);
     }
-
-    // jak-to-funguje záložky (data-category na .category-tab)
-    this.list.categoryTabs.forEach(tab => {
-      tab.addEventListener('click', () => {
-        this._switchCategory(tab.getAttribute('data-category'));
-        this.list.categoryTabs.forEach(t => t.classList.remove('active'));
-        tab.classList.add('active');
-      });
-    });
-  }
-
-  _renderCategory(category) {
-    // aktivní taby
-    if (this.top.tabsWrap) {
-      this.top.tabsWrap.querySelectorAll('.tp-tab').forEach(t => {
-        t.classList.toggle('active', t.getAttribute('data-category') === category);
-      });
+    
+    pause() {
+        this.isPlaying = false;
+        this.playBtn.textContent = '▶';
+        this.heroPlayBtn.textContent = '▶ Přehrát ukázky';
+        
+        // Zastav HTML5 audio pokud běží
+        if (this.audioElement) {
+            this.audioElement.pause();
+        }
+        
+        // Zastav simulaci pokud běží
+        if (this.audioInterval) {
+            clearInterval(this.audioInterval);
+        }
     }
-    this.list.categoryTabs.forEach(t => {
-      t.classList.toggle('active', t.getAttribute('data-category') === category);
-    });
-
-    // render seznamu skladeb
-    if (this.list.tracks) {
-      const tracks = this.catalog[category] || [];
-      this.list.tracks.innerHTML = tracks.map((track, i) => `
-        <div class="track-item" data-index="${i}">
-          <div class="track-info"><div class="track-title">${track.title}</div></div>
-          <button class="track-play-btn" data-index="${i}">▶</button>
-        </div>
-      `).join('');
-
-      // kliky na řádek i na tlačítko
-      this.list.tracks.querySelectorAll('.track-item').forEach(item => {
-        item.addEventListener('click', () => {
-          const i = Number(item.getAttribute('data-index'));
-          this._playIndex(i);
-        });
-      });
-      this.list.tracks.querySelectorAll('.track-play-btn').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-          e.stopPropagation();
-          const i = Number(btn.getAttribute('data-index'));
-          this._playIndex(i);
-        });
-      });
+    
+    previousTrack() {
+        this.currentTrack = (this.currentTrack - 1 + this.tracks.length) % this.tracks.length;
+        this.updateTrackInfo();
+        this.currentTime = 0;
+        this.updateProgress();
+        
+        // Zastav aktuální audio
+        if (this.audioElement) {
+            this.audioElement.pause();
+            this.audioElement.currentTime = 0;
+        }
+        
+        if (this.isPlaying) {
+            this.pause();
+            setTimeout(() => this.play(), 100);
+        }
     }
-  }
-
-  _switchCategory(category) {
-    if (!this.catalog[category]) return;
-    this.category = category;
-    this.queue = [...this.catalog[category]];
-    this.index = 0;
-    this._renderCategory(category);
-    this._loadAndMaybeAutoplay(true);
-  }
-
-  _playIndex(i) {
-    if (i === this.index) {
-      // toggle play/pause na stejné stopě
-      this.toggle();
-      return;
+    
+    nextTrack() {
+        this.currentTrack = (this.currentTrack + 1) % this.tracks.length;
+        this.updateTrackInfo();
+        this.currentTime = 0;
+        this.updateProgress();
+        
+        // Zastav aktuální audio
+        if (this.audioElement) {
+            this.audioElement.pause();
+            this.audioElement.currentTime = 0;
+        }
+        
+        if (this.isPlaying) {
+            this.pause();
+            setTimeout(() => this.play(), 100);
+        }
     }
-    this.index = i;
-    this._loadAndMaybeAutoplay(true);
-  }
-
-  _loadAndMaybeAutoplay(autoplay) {
-    const t = this._currentTrack();
-    if (!t || !t.file) return;
-    this.audio.src = t.file;
-    this.audio.muted = this.isMuted;
-    this._updateMetaUi();
-    if (autoplay) this.play();
-  }
-
-  /* -----------------------------
-     Veřejné metody ovládání
-  ----------------------------- */
-  play() {
-    const t = this._currentTrack();
-    if (!t) return;
-    this.audio.play().then(() => {
-      this.isPlaying = true;
-      this._syncButtonsPlayingState();
-      this._updateMetaUi();
-    }).catch(() => {
-      // pokud by přehrání selhalo, zkuste další stopu
-      this.next();
-    });
-  }
-
-  pause() {
-    this.audio.pause();
-    this.isPlaying = false;
-    this._syncButtonsPlayingState();
-  }
-
-  toggle() {
-    this.isPlaying ? this.pause() : this.play();
-  }
-
-  next() {
-    if (!this.queue.length) return;
-    this.index = (this.index + 1) % this.queue.length;
-    this._loadAndMaybeAutoplay(this.isPlaying);
-  }
-
-  prev() {
-    if (!this.queue.length) return;
-    this.index = (this.index - 1 + this.queue.length) % this.queue.length;
-    this._loadAndMaybeAutoplay(this.isPlaying);
-  }
-
-  muteToggle() {
-    this.isMuted = !this.isMuted;
-    this.audio.muted = this.isMuted;
-    if (this.el.mute) this.el.mute.textContent = this.isMuted ? '🔇' : '🔊';
-  }
+    
+    toggleMute() {
+        this.isMuted = !this.isMuted;
+        this.muteBtn.textContent = this.isMuted ? '🔇' : '🔊';
+        
+        // Aktualizuj volume v HTML5 audio elementu
+        if (this.audioElement) {
+            this.audioElement.volume = this.isMuted ? 0 : this.volume;
+        }
+    }
+    
+    hidePlayer() {
+        if (this.audioPlayer) this.audioPlayer.style.display = 'none';
+        if (this.floatingBtn) this.floatingBtn.style.display = 'block';
+    }
+    
+    showPlayer() {
+        if (this.audioPlayer) this.audioPlayer.style.display = 'block';
+        if (this.floatingBtn) this.floatingBtn.style.display = 'none';
+    }
+    
+    updateTrackInfo() {
+        const t = this.tracks[this.currentTrack];
+        if (this.trackTitle) this.trackTitle.textContent = t.title || '';
+        if (this.trackMeta) this.trackMeta.textContent = `Ukázka písničky • 0:${String(t.duration).padStart(2, '0')}`;
+    }
+    
+    updateProgress() {
+        const progress = (this.currentTime / this.duration) * 100;
+        if (this.progressBar) this.progressBar.value = progress;
+        this.currentTimeEl.textContent = this.formatTime(this.currentTime);
+    }
+    
+    formatTime(seconds) {
+        const mins = Math.floor(seconds / 60);
+        const secs = Math.floor(seconds % 60);
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    }
 }
 
-// Singleton instance (vyhneme se více instancím na stránce)
-function initAudio() {
-  if (!window.__audioController) {
-    window.__audioController = new AudioController();
-  }
-  return window.__audioController;
-}
-
-/* =============================================
-   FAQ akordeon
-============================================= */
-function initFAQ() {
-  const items = document.querySelectorAll('.faq-item');
-  items.forEach(item => {
-    const q = item.querySelector('.faq-question');
-    const toggle = () => {
-      const active = item.classList.contains('active');
-      document.querySelectorAll('.faq-item.active').forEach(i => {
-        i.classList.remove('active');
-        const qi = i.querySelector('.faq-question');
-        if (qi) qi.setAttribute('aria-expanded', 'false');
-      });
-      item.classList.toggle('active', !active);
-      if (q) q.setAttribute('aria-expanded', String(!active));
-    };
-    if (q) q.addEventListener('click', toggle);
-  });
-}
-
-/* =============================================
-   Plynulé skrolování na kotvy (zohlední header i player)
-============================================= */
-(() => {
-  const header = document.querySelector('.header');
-  const player = document.getElementById('audio-player');
-  document.querySelectorAll('a[href^="#"]').forEach(a => {
-    a.addEventListener('click', (e) => {
-      const target = document.querySelector(a.getAttribute('href'));
-      if (!target) return;
-      e.preventDefault();
-      const headerH = header?.offsetHeight || 0;
-      const playerH = player?.offsetHeight || 0;
-      const offset = headerH + playerH + 20;
-      window.scrollTo({ top: Math.max(0, target.offsetTop - offset), behavior: 'smooth' });
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            const headerHeight = document.querySelector('.header').offsetHeight;
+            const audioPlayerHeight = document.getElementById('audio-player').offsetHeight;
+            const offset = headerHeight + audioPlayerHeight + 20;
+            
+            window.scrollTo({
+                top: target.offsetTop - offset,
+                behavior: 'smooth'
+            });
+        }
     });
-  });
-})();
-
-/* =============================================
-   Formulář – jednoduché ošetření
-============================================= */
-function handleContactForm(event) {
-  event.preventDefault();
-  const data = Object.fromEntries(new FormData(event.target));
-  if (!data.name || !data.email || !data.message) {
-    alert('Prosím vyplňte všechna pole.');
-    return;
-  }
-  alert('Děkujeme za váš zájem! Brzy vás budeme kontaktovat.');
-  event.target.reset();
-}
-
-/* =============================================
-   Vizuální drobnosti
-============================================= */
-window.addEventListener('scroll', () => {
-  const header = document.querySelector('.header');
-  if (header) header.style.boxShadow = window.scrollY > 100
-    ? '0 2px 10px rgba(0, 0, 0, 0.1)'
-    : '0 1px 3px rgba(0, 0, 0, 0.1)';
 });
 
-window.addEventListener('load', () => document.body.classList.add('loaded'));
-
-/* =============================================
-   Jednoduchá "analytics"
-============================================= */
-function trackEvent(eventName, eventData = {}) {
-  // zde lze napojit GA/Pixel apod.
-  console.log('Event tracked:', eventName, eventData);
-}
-
-document.addEventListener('click', (e) => {
-  if (e.target.matches('.nav-btn, .hero-btn, .cta-btn, .service-link')) {
-    trackEvent('button_click', { button_text: e.target.textContent, button_href: e.target.href });
-  }
-  if (e.target.matches('.control-btn, .hero-play-btn, #tp-play, #tp-prev, #tp-next')) {
-    trackEvent('audio_interaction', { button: e.target.textContent || e.target.id });
-  }
-});
-
-/* =============================================
-   Start aplikace
-============================================= */
+// Initialize audio player when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-  initAudio();
-  initFAQ();
+    new AudioPlayer();
+});
+
+// Simple form handling (if you add a contact form)
+function handleContactForm(event) {
+    event.preventDefault();
+    
+    // Get form data
+    const formData = new FormData(event.target);
+    const data = Object.fromEntries(formData);
+    
+    // Simple validation
+    if (!data.name || !data.email || !data.message) {
+        alert('Prosím vyplňte všechna pole.');
+        return;
+    }
+    
+    // Simulate form submission
+    alert('Děkujeme za váš zájem! Brzy vás budeme kontaktovat.');
+    event.target.reset();
+}
+
+// Add scroll effect to header
+window.addEventListener('scroll', () => {
+    const header = document.querySelector('.header');
+    if (window.scrollY > 100) {
+        header.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
+    } else {
+        header.style.boxShadow = '0 1px 3px rgba(0, 0, 0, 0.1)';
+    }
+});
+
+// Add loading animation
+window.addEventListener('load', () => {
+    document.body.classList.add('loaded');
+});
+
+// Simple analytics (you can replace with Google Analytics)
+function trackEvent(eventName, eventData = {}) {
+    console.log('Event tracked:', eventName, eventData);
+    // Here you would send data to your analytics service
+}
+
+// Track button clicks
+document.addEventListener('click', (e) => {
+    if (e.target.matches('.nav-btn, .hero-btn, .cta-btn, .service-link')) {
+        trackEvent('button_click', {
+            button_text: e.target.textContent,
+            button_href: e.target.href
+        });
+    }
+});
+
+// Track audio player interactions
+document.addEventListener('click', (e) => {
+    if (e.target.matches('.control-btn, .hero-play-btn')) {
+        trackEvent('audio_interaction', {
+            button: e.target.textContent || e.target.id
+        });
+    }
+});
+
+
+
+function initTopPlayer() {
+    const prev = document.getElementById('tp-prev');
+    const play = document.getElementById('tp-play');
+    const next = document.getElementById('tp-next');
+    const title = document.getElementById('tp-title');
+    const tabs = document.querySelectorAll('#tp-tabs .tp-tab');
+
+    // Pokud nejsou elementy, neinicializuj
+    if (!play) return;
+
+    if (!window.__playerInstance) {
+        window.__playerInstance = new AudioPlayer();
+    }
+    const player = window.__playerInstance;
+
+    // Sync title on track change via updateTrackInfo override
+    const originalUpdate = player.updateTrackInfo.bind(player);
+    player.updateTrackInfo = function() {
+        originalUpdate();
+        const t = this.tracks[this.currentTrack];
+        if (title && t) title.textContent = t.title || 'Ukázka písničky';
+    };
+    player.updateTrackInfo();
+
+    // Controls
+    if (prev) prev.addEventListener('click', () => player.previousTrack());
+    if (next) next.addEventListener('click', () => player.nextTrack());
+    if (play) play.addEventListener('click', () => player.togglePlayPause());
+
+    // Tabs -> switch category playlist
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const key = tab.getAttribute('data-category');
+            // Activate tab
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            // Prepare playlist from category
+            const items = categories[key] || [];
+            if (!items.length) return;
+            player.tracks = items.map(it => ({ title: it.title, file: it.file || null, duration: it.duration }));
+            player.currentTrack = 0;
+            player.updateTrackInfo();
+            player.pause();
+            setTimeout(() => player.play(), 50);
+        });
+    });
+}
+
+// FAQ Accordion functionality
+function initFAQ() {
+    const faqItems = document.querySelectorAll('.faq-item');
+    
+    faqItems.forEach(item => {
+        const question = item.querySelector('.faq-question');
+        const answer = item.querySelector('.faq-answer');
+        
+        question.addEventListener('click', () => {
+            const isActive = item.classList.contains('active');
+            
+            // Close all other items
+            faqItems.forEach(otherItem => {
+                if (otherItem !== item) {
+                    otherItem.classList.remove('active');
+                    otherItem.querySelector('.faq-question').setAttribute('aria-expanded', 'false');
+                }
+            });
+            
+            // Toggle current item
+            if (isActive) {
+                item.classList.remove('active');
+                question.setAttribute('aria-expanded', 'false');
+            } else {
+                item.classList.add('active');
+                question.setAttribute('aria-expanded', 'true');
+            }
+        });
+    });
+}
+
+// Nový přehrávač pro jak-to-funguje
+class MusicPlayer {
+    constructor() {
+        this.currentTrack = 0;
+        this.currentCategory = 'pop';
+        this.isPlaying = false;
+        this.audio = null;
+        this.tracks = {};
+        
+        // Definice skladeb podle kategorií
+        this.tracks = {
+            pop: [
+                { title: 'Popová píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 30 },
+                { title: 'Popová píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 30 },
+                { title: 'Popová píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 25 }
+            ],
+            akusticka: [
+                { title: 'Akustická píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 28 },
+                { title: 'Akustická píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 25 },
+                { title: 'Akustická píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 27 }
+            ],
+            detska: [
+                { title: 'Dětská píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 20 },
+                { title: 'Dětská píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 22 },
+                { title: 'Dětská píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 18 }
+            ],
+            svatebni: [
+                { title: 'Svatební píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 26 },
+                { title: 'Svatební píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 27 },
+                { title: 'Svatební píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 24 }
+            ]
+        };
+        
+        this.init();
+    }
+    
+    init() {
+        console.log('MusicPlayer init started');
+        this.playerElement = document.getElementById('music-player');
+        console.log('Player element:', this.playerElement);
+        
+        if (!this.playerElement) {
+            console.error('Music player element not found');
+            return;
+        }
+        
+        this.tracksList = document.getElementById('tracks-list');
+        console.log('Tracks list element:', this.tracksList);
+        
+        if (!this.tracksList) {
+            console.error('Tracks list element not found');
+            return;
+        }
+        
+        this.setupEventListeners();
+        this.loadCategory('pop');
+        console.log('MusicPlayer init completed');
+    }
+    
+    setupEventListeners() {
+        console.log('Setting up event listeners');
+        // Category tabs
+        const categoryTabs = document.querySelectorAll('.category-tab');
+        console.log('Found category tabs:', categoryTabs.length);
+        
+        categoryTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const category = tab.getAttribute('data-category');
+                console.log('Category clicked:', category);
+                this.loadCategory(category);
+            });
+        });
+    }
+    
+    loadCategory(category) {
+        this.currentCategory = category;
+        this.currentTrack = 0;
+        
+        // Update active tab
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`[data-category="${category}"]`).classList.add('active');
+        
+        // Load tracks
+        this.renderTracks();
+    }
+    
+    renderTracks() {
+        console.log('Rendering tracks for category:', this.currentCategory);
+        if (!this.tracksList) {
+            console.error('Tracks list not found');
+            return;
+        }
+        
+        const tracks = this.tracks[this.currentCategory] || [];
+        console.log('Tracks found:', tracks.length);
+        
+        this.tracksList.innerHTML = tracks.map((track, index) => `
+            <div class="track-item" data-index="${index}">
+                <div class="track-info">
+                    <div class="track-title">${track.title}</div>
+                </div>
+                <button class="track-play-btn" data-index="${index}">▶</button>
+            </div>
+        `).join('');
+        
+        console.log('Tracks rendered, setting up click listeners');
+        
+        // Add click listeners to entire track items
+        this.tracksList.querySelectorAll('.track-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const index = parseInt(item.getAttribute('data-index'));
+                console.log('Track item clicked:', index);
+                this.toggleTrackPlay(index);
+            });
+        });
+        
+        // Add click listeners to play buttons (prevent event bubbling)
+        this.tracksList.querySelectorAll('.track-play-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const index = parseInt(btn.getAttribute('data-index'));
+                console.log('Track play button clicked:', index);
+                this.toggleTrackPlay(index);
+            });
+        });
+    }
+    
+    toggleTrackPlay(index) {
+        // If same track is clicked, toggle play/pause
+        if (this.currentTrack === index && this.audio) {
+            if (this.isPlaying) {
+                this.pause();
+            } else {
+                this.play();
+            }
+        } else {
+            // Different track, play it
+            this.currentTrack = index;
+            this.play();
+        }
+    }
+    
+    play() {
+        const track = this.tracks[this.currentCategory][this.currentTrack];
+        if (!track) return;
+        
+        if (this.audio) {
+            this.audio.pause();
+        }
+        
+        this.audio = new Audio(track.file);
+        this.audio.addEventListener('loadedmetadata', () => {
+            console.log('Audio loaded, updating time display');
+            this.updateTimeDisplay();
+        });
+        this.audio.addEventListener('timeupdate', () => {
+            this.updateProgress();
+        });
+        this.audio.addEventListener('ended', () => {
+            this.nextTrack();
+        });
+        
+        this.audio.play().then(() => {
+            this.isPlaying = true;
+            this.updatePlayButtons();
+        }).catch(error => {
+            console.log('Playback failed:', error);
+        });
+    }
+    
+    pause() {
+        if (this.audio) {
+            this.audio.pause();
+        }
+        this.isPlaying = false;
+        this.updatePlayButtons();
+    }
+    
+    updatePlayButtons() {
+        // Update all play buttons and track items
+        this.tracksList.querySelectorAll('.track-item').forEach((item, index) => {
+            const btn = item.querySelector('.track-play-btn');
+            
+            if (index === this.currentTrack && this.isPlaying) {
+                btn.textContent = '⏸';
+                btn.classList.add('playing');
+                item.classList.add('playing');
+            } else {
+                btn.textContent = '▶';
+                btn.classList.remove('playing');
+                item.classList.remove('playing');
+            }
+        });
+    }
+    
+    nextTrack() {
+        const tracks = this.tracks[this.currentCategory];
+        this.currentTrack = (this.currentTrack + 1) % tracks.length;
+        if (this.isPlaying) {
+            this.play();
+        }
+    }
+}
+
+function initMusicPlayer() {
+    // Initialize on both jak-to-funguje and homepage
+    if (window.location.pathname.includes('jak-to-funguje') || window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
+        console.log('Initializing MusicPlayer...');
+        console.log('Current pathname:', window.location.pathname);
+        
+        // Add delay for homepage to ensure DOM is ready
+        const delay = window.location.pathname === '/' || window.location.pathname.includes('index.html') ? 500 : 100;
+        console.log('Using delay:', delay);
+        
+        setTimeout(() => {
+            try {
+                new MusicPlayer();
+                console.log('MusicPlayer initialized successfully');
+            } catch (error) {
+                console.error('Error initializing MusicPlayer:', error);
+            }
+        }, delay);
+    }
+}
+
+// Init on DOM ready
+document.addEventListener('DOMContentLoaded', () => {
+    if (!window.__playerInstance) {
+        window.__playerInstance = new AudioPlayer();
+    }
+    initTopPlayer();
+    initFAQ();
+    initMusicPlayer();
 });
