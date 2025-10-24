@@ -626,14 +626,14 @@ class MusicPlayer {
 }
 
 // Global flag to prevent duplicate initialization
-let musicPlayerInitialized = false;
+window.musicPlayerInitialized = false;
 
 // Chrome detection
 const isChrome = /Chrome/.test(navigator.userAgent) && /Google Inc/.test(navigator.vendor);
 
 function initMusicPlayer() {
     // Check if already initialized
-    if (musicPlayerInitialized) {
+    if (window.musicPlayerInitialized) {
         console.log('MusicPlayer already initialized, skipping...');
         return;
     }
@@ -659,7 +659,7 @@ function initMusicPlayer() {
         
         try {
             new MusicPlayer();
-            musicPlayerInitialized = true;
+            window.musicPlayerInitialized = true;
             console.log('MusicPlayer initialized successfully');
         } catch (error) {
             console.error('Error initializing MusicPlayer:', error);
@@ -683,7 +683,7 @@ window.addEventListener('load', initAll);
 window.addEventListener('pageshow', (e) => {
     if (e.persisted) {
         console.log('Page restored from bfcache, reinitializing...');
-        musicPlayerInitialized = false; // Reset flag for bfcache
+        window.musicPlayerInitialized = false; // Reset flag for bfcache
         initAll();
     }
 });
@@ -691,7 +691,7 @@ window.addEventListener('pageshow', (e) => {
 // Additional fallback for GitHub Pages - check after everything is loaded
 window.addEventListener('load', () => {
     setTimeout(() => {
-        if (!musicPlayerInitialized) {
+        if (!window.musicPlayerInitialized) {
             console.log('Final fallback attempt after window load...');
             const musicPlayer = document.getElementById('music-player');
             const tracksList = document.getElementById('tracks-list');
@@ -719,7 +719,7 @@ function setupMutationObserver() {
         const musicPlayer = document.getElementById('music-player');
         const tracksList = document.getElementById('tracks-list');
         
-        if (musicPlayer && tracksList && !tracksList.children.length && !musicPlayerInitialized) {
+        if (musicPlayer && tracksList && !tracksList.children.length && !window.musicPlayerInitialized) {
             console.log('Music player elements found via MutationObserver, initializing...');
             initMusicPlayer();
         }
@@ -740,7 +740,7 @@ function setupChromeMutationObserver() {
         const musicPlayer = document.getElementById('music-player');
         const tracksList = document.getElementById('tracks-list');
         
-        if (musicPlayer && tracksList && !musicPlayerInitialized) {
+        if (musicPlayer && tracksList && !window.musicPlayerInitialized) {
             console.log('Chrome MutationObserver: Elements found, initializing...');
             initMusicPlayer();
         }
@@ -756,7 +756,7 @@ function setupChromeMutationObserver() {
 
 // Chrome-specific aggressive fallback
 function chromeAggressiveInit() {
-    if (!isChrome || musicPlayerInitialized) return;
+    if (!isChrome || window.musicPlayerInitialized) return;
     
     console.log('Chrome-specific aggressive initialization...');
     const musicPlayer = document.getElementById('music-player');
@@ -777,7 +777,7 @@ function aggressiveInit() {
     const musicPlayer = document.getElementById('music-player');
     const tracksList = document.getElementById('tracks-list');
     
-    if (musicPlayer && tracksList && !musicPlayerInitialized) {
+    if (musicPlayer && tracksList && !window.musicPlayerInitialized) {
         console.log('Elements found, attempting initialization...');
         initMusicPlayer();
     } else if (!musicPlayerInitialized) {
@@ -834,7 +834,7 @@ if (isChrome) {
     // Chrome-specific window load fallback
     window.addEventListener('load', () => {
         setTimeout(() => {
-            if (!musicPlayerInitialized) {
+            if (!window.musicPlayerInitialized) {
                 console.log('Chrome window load fallback...');
                 chromeAggressiveInit();
             }
