@@ -24,9 +24,9 @@ class AudioPlayer {
         this.duration = 30; // Default duration
         
         this.tracks = [
-            { title: 'Renata - Osobní píseň na míru', file: '../songs/Renata.mp3', duration: 30 },
-            { title: 'Oslava narozenin', file: null, duration: 30 },
-            { title: 'Svatební píseň', file: null, duration: 25 }
+            { title: 'Ukázka 1 - Popová píseň', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 30 },
+            { title: 'Ukázka 2 - Akustická píseň', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 30 },
+            { title: 'Ukázka 3 - Dětská píseň', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 25 }
         ];
         
         this.init();
@@ -314,97 +314,7 @@ document.addEventListener('click', (e) => {
     }
 });
 
-// v2 Mini Player logic
-const categories = {
-    pop: [
-        { title: 'Renata - Osobní píseň', file: '../songs/Renata.mp3', duration: 30 },
-        { title: 'Ukázka Pop #2', file: null, duration: 30 },
-    ],
-    akusticka: [
-        { title: 'Ukázka Akustická #1', file: null, duration: 28 },
-        { title: 'Ukázka Akustická #2', file: null, duration: 25 },
-    ],
-    detska: [
-        { title: 'Ukázka Dětská #1', file: null, duration: 20 },
-        { title: 'Ukázka Dětská #2', file: null, duration: 22 },
-    ],
-    svatebni: [
-        { title: 'Ukázka Svatební #1', file: null, duration: 26 },
-        { title: 'Ukázka Svatební #2', file: null, duration: 27 },
-    ],
-};
 
-function renderTrackList(categoryKey) {
-    const list = document.getElementById('track-list');
-    if (!list) return;
-
-    const items = categories[categoryKey] || [];
-    list.innerHTML = items.map((t, idx) => `
-        <li class="track-item">
-            <div>
-                <div class="track-title">${t.title}</div>
-                <div class="track-meta">${t.duration}s</div>
-            </div>
-            <div class="track-actions">
-                <button class="play" data-idx="${idx}">▶</button>
-            </div>
-        </li>
-    `).join('');
-
-    // Bind play buttons
-    list.querySelectorAll('.play').forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            const i = parseInt(e.currentTarget.getAttribute('data-idx'), 10);
-            playCategoryTrack(categoryKey, i);
-        });
-    });
-}
-
-function setActiveTab(categoryKey) {
-    const tabs = document.querySelectorAll('#player-tabs .tab');
-    tabs.forEach(tab => {
-        const isActive = tab.getAttribute('data-category') === categoryKey;
-        tab.classList.toggle('active', isActive);
-    });
-}
-
-function initTabs() {
-    const tabs = document.querySelectorAll('#player-tabs .tab');
-    if (!tabs.length) return;
-    tabs.forEach(tab => {
-        tab.addEventListener('click', () => {
-            const key = tab.getAttribute('data-category');
-            setActiveTab(key);
-            renderTrackList(key);
-        });
-    });
-
-    // Default category
-    setActiveTab('pop');
-    renderTrackList('pop');
-}
-
-function playCategoryTrack(categoryKey, index) {
-    const items = categories[categoryKey] || [];
-    const track = items[index];
-    if (!track) return;
-
-    // Integrace s hlavním AudioPlayerem
-    if (!window.__playerInstance) {
-        window.__playerInstance = new AudioPlayer();
-    }
-    const player = window.__playerInstance;
-
-    // Připrav dynamicky playlist tak, aby vybraný track byl první
-    player.tracks = [
-        { title: track.title, file: track.file || null, duration: track.duration },
-        ...player.tracks.filter(t => t.title !== track.title)
-    ];
-    player.currentTrack = 0;
-    player.updateTrackInfo();
-    player.pause();
-    setTimeout(() => player.play(), 50);
-}
 
 function initTopPlayer() {
     const prev = document.getElementById('tp-prev');
@@ -412,6 +322,9 @@ function initTopPlayer() {
     const next = document.getElementById('tp-next');
     const title = document.getElementById('tp-title');
     const tabs = document.querySelectorAll('#tp-tabs .tp-tab');
+
+    // Pokud nejsou elementy, neinicializuj
+    if (!play) return;
 
     if (!window.__playerInstance) {
         window.__playerInstance = new AudioPlayer();
@@ -482,12 +395,186 @@ function initFAQ() {
     });
 }
 
+// Nový přehrávač pro jak-to-funguje
+class MusicPlayer {
+    constructor() {
+        this.currentTrack = 0;
+        this.currentCategory = 'pop';
+        this.isPlaying = false;
+        this.audio = null;
+        this.tracks = {};
+        
+        // Definice skladeb podle kategorií
+        this.tracks = {
+            pop: [
+                { title: 'Popová píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 30 },
+                { title: 'Popová píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 30 },
+                { title: 'Popová píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 25 }
+            ],
+            akusticka: [
+                { title: 'Akustická píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 28 },
+                { title: 'Akustická píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 25 },
+                { title: 'Akustická píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 27 }
+            ],
+            detska: [
+                { title: 'Dětská píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 20 },
+                { title: 'Dětská píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 22 },
+                { title: 'Dětská píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 18 }
+            ],
+            svatebni: [
+                { title: 'Svatební píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 26 },
+                { title: 'Svatební píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 27 },
+                { title: 'Svatební píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 24 }
+            ]
+        };
+        
+        this.init();
+    }
+    
+    init() {
+        this.playerElement = document.getElementById('music-player');
+        if (!this.playerElement) return;
+        
+        this.tracksList = document.getElementById('tracks-list');
+        
+        this.setupEventListeners();
+        this.loadCategory('pop');
+    }
+    
+    setupEventListeners() {
+        // Category tabs
+        const categoryTabs = document.querySelectorAll('.category-tab');
+        categoryTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const category = tab.getAttribute('data-category');
+                this.loadCategory(category);
+            });
+        });
+    }
+    
+    loadCategory(category) {
+        this.currentCategory = category;
+        this.currentTrack = 0;
+        
+        // Update active tab
+        document.querySelectorAll('.category-tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+        document.querySelector(`[data-category="${category}"]`).classList.add('active');
+        
+        // Load tracks
+        this.renderTracks();
+    }
+    
+    renderTracks() {
+        if (!this.tracksList) return;
+        
+        const tracks = this.tracks[this.currentCategory] || [];
+        this.tracksList.innerHTML = tracks.map((track, index) => `
+            <div class="track-item" data-index="${index}">
+                <div class="track-info">
+                    <div class="track-title">${track.title}</div>
+                </div>
+                <button class="track-play-btn" data-index="${index}">▶</button>
+            </div>
+        `).join('');
+        
+        // Add click listeners to play buttons
+        this.tracksList.querySelectorAll('.track-play-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const index = parseInt(btn.getAttribute('data-index'));
+                this.toggleTrackPlay(index);
+            });
+        });
+    }
+    
+    toggleTrackPlay(index) {
+        // If same track is clicked, toggle play/pause
+        if (this.currentTrack === index && this.audio) {
+            if (this.isPlaying) {
+                this.pause();
+            } else {
+                this.play();
+            }
+        } else {
+            // Different track, play it
+            this.currentTrack = index;
+            this.play();
+        }
+    }
+    
+    play() {
+        const track = this.tracks[this.currentCategory][this.currentTrack];
+        if (!track) return;
+        
+        if (this.audio) {
+            this.audio.pause();
+        }
+        
+        this.audio = new Audio(track.file);
+        this.audio.addEventListener('loadedmetadata', () => {
+            console.log('Audio loaded, updating time display');
+            this.updateTimeDisplay();
+        });
+        this.audio.addEventListener('timeupdate', () => {
+            this.updateProgress();
+        });
+        this.audio.addEventListener('ended', () => {
+            this.nextTrack();
+        });
+        
+        this.audio.play().then(() => {
+            this.isPlaying = true;
+            this.updatePlayButtons();
+        }).catch(error => {
+            console.log('Playback failed:', error);
+        });
+    }
+    
+    pause() {
+        if (this.audio) {
+            this.audio.pause();
+        }
+        this.isPlaying = false;
+        this.updatePlayButtons();
+    }
+    
+    updatePlayButtons() {
+        // Update all play buttons
+        this.tracksList.querySelectorAll('.track-play-btn').forEach((btn, index) => {
+            if (index === this.currentTrack && this.isPlaying) {
+                btn.textContent = '⏸';
+                btn.classList.add('playing');
+            } else {
+                btn.textContent = '▶';
+                btn.classList.remove('playing');
+            }
+        });
+    }
+    
+    nextTrack() {
+        const tracks = this.tracks[this.currentCategory];
+        this.currentTrack = (this.currentTrack + 1) % tracks.length;
+        if (this.isPlaying) {
+            this.play();
+        }
+    }
+}
+
+function initMusicPlayer() {
+    // Initialize on both jak-to-funguje and homepage
+    if (window.location.pathname.includes('jak-to-funguje') || window.location.pathname === '/' || window.location.pathname.includes('index.html')) {
+        new MusicPlayer();
+    }
+}
+
 // Init on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
-    initTabs();
     if (!window.__playerInstance) {
         window.__playerInstance = new AudioPlayer();
     }
     initTopPlayer();
     initFAQ();
+    initMusicPlayer();
 });
