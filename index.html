@@ -45,7 +45,7 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="homepage">
     <!-- Google Tag Manager (noscript) -->
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-KQR2WCBM"
     height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -76,23 +76,6 @@
         </nav>
     </header>
 
-    <!-- Thin Sticky Player -->
-    <div class="top-player" id="top-player">
-        <div class="top-player-container">
-            <div class="top-player-left">
-                <button class="tp-btn" id="tp-prev" aria-label="Předchozí">⏮</button>
-                <button class="tp-btn tp-play" id="tp-play" aria-label="Přehrát/Pozastavit">▶</button>
-                <button class="tp-btn" id="tp-next" aria-label="Další">⏭</button>
-                <div class="tp-title" id="tp-title">Ukázka písničky</div>
-            </div>
-            <div class="top-player-tabs" id="tp-tabs">
-                <button class="tp-tab active" data-category="pop">Pop</button>
-                <button class="tp-tab" data-category="akusticka">Akustická</button>
-                <button class="tp-tab" data-category="detska">Dětská</button>
-                <button class="tp-tab" data-category="svatebni">Svatební</button>
-            </div>
-        </div>
-    </div>
 
     <!-- Audio Player -->
     <div class="audio-player" id="audio-player" style="display: none;">
@@ -175,6 +158,22 @@
                     <div class="benefit-icon">⏱️</div>
                     <h3 class="benefit-title">Už do 24 hodin posloucháte</h3>
                     <p class="benefit-text">Brzy, ale ne okamžitě. Ruční část tvorby si žádá svůj čas.</p>
+                </div>
+            </div>
+            
+            <!-- Zjednodušený přehrávač -->
+            <div class="music-player" id="music-player">
+                <div class="player-categories">
+                    <div class="category-tabs">
+                        <button class="category-tab active" data-category="pop">Pop</button>
+                        <button class="category-tab" data-category="akusticka">Akustická</button>
+                        <button class="category-tab" data-category="detska">Dětská</button>
+                        <button class="category-tab" data-category="svatebni">Svatební</button>
+                    </div>
+                    
+                    <div class="tracks-list" id="tracks-list">
+                        <!-- Tracks will be loaded here -->
+                    </div>
                 </div>
             </div>
             
