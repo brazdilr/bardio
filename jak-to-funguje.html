@@ -53,7 +53,7 @@
         </nav>
     </header>
 
-    
+
 
     <main>
         <!-- 1) Úvodní sekce -->
@@ -164,13 +164,23 @@
         <section class="testimonials" id="ukazky">
             <div class="container">
                 <h2 class="section-title">Každá píseň zní jinak – poslechněte si ukázky</h2>
-                <div class="top-player-tabs" id="player-tabs" style="justify-content:center; margin-bottom:1rem">
-                    <button class="tab active" data-category="pop">Pop</button>
-                    <button class="tab" data-category="akusticka">Akustická</button>
-                    <button class="tab" data-category="detska">Dětská</button>
-                    <button class="tab" data-category="svatebni">Svatební</button>
+                
+        <!-- Zjednodušený přehrávač -->
+        <div class="music-player" id="music-player">
+            <div class="player-categories">
+                <div class="category-tabs">
+                    <button class="category-tab active" data-category="pop">Pop</button>
+                    <button class="category-tab" data-category="akusticka">Akustická</button>
+                    <button class="category-tab" data-category="detska">Dětská</button>
+                    <button class="category-tab" data-category="svatebni">Svatební</button>
                 </div>
-                <ul class="track-list" id="track-list" style="max-width:720px;margin:0 auto"></ul>
+                
+                <div class="tracks-list" id="tracks-list">
+                    <!-- Tracks will be loaded here -->
+                </div>
+            </div>
+        </div>
+                
                 <div style="text-align:center; margin-top:1.25rem">
                     <a href="#objednat" class="btn btn-primary">Chci podobnou píseň</a>
                 </div>
@@ -213,7 +223,6 @@
         </div>
     </footer>
 
-    <button class="floating-audio-btn" id="floating-audio-btn" style="display: none;">▶</button>
     <script src="script.js"></script>
 </body>
 </html>
