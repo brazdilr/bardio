@@ -128,8 +128,14 @@
         </div>
     </section>
     
-    <!-- Section Separator -->
-    <div class="section-separator" aria-hidden="true"></div>
+    <!-- Poutavý přechod s obloukem -->
+    <div class="hero-transition">
+        <svg class="hero-wave" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="currentColor"></path>
+            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="currentColor"></path>
+            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="#0fbade"></path>
+        </svg>
+    </div>
 
     <!-- How it works -->
     <section id="how-it-works" class="how-it-works how-it-works--turquoise">
@@ -137,55 +143,73 @@
             <h2 class="section-title">Stačí pár slov. Ostatní je na nás</h2>
             <p class="section-subtitle"></p>
 
-            <!-- Benefits grid -->
-            <div class="benefits">
-                <div class="benefit">
-                    <div class="benefit-icon">🧠</div>
-                    <h3 class="benefit-title">To nejlepší, co AI dokáže</h3>
-                    <p class="benefit-text">Máme licence k pokročilým produkčním nástrojům.</p>
+            <!-- Kompaktní layout: výhody vlevo, přehrávač vpravo -->
+            <div class="benefits-player-grid">
+                <!-- Výhody - vlevo pod sebou -->
+                <div class="benefits-column">
+                    <div class="benefit-compact">
+                        <div class="benefit-icon">🧠</div>
+                        <div class="benefit-content">
+                            <h3 class="benefit-title">To nejlepší, co AI dokáže</h3>
+                            <p class="benefit-text">Máme licence k pokročilým produkčním nástrojům.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-compact">
+                        <div class="benefit-icon">✍️</div>
+                        <div class="benefit-content">
+                            <h3 class="benefit-title">Profi textař po ruce</h3>
+                            <p class="benefit-text">Na generované výstupy vždy hodí oko i zkušený textař.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-compact">
+                        <div class="benefit-icon">🎁</div>
+                        <div class="benefit-content">
+                            <h3 class="benefit-title">Garance kvality</h3>
+                            <p class="benefit-text">Pokud vám písnička nesedne, druhou verzi vytvoříme zdarma.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-compact">
+                        <div class="benefit-icon">⏱️</div>
+                        <div class="benefit-content">
+                            <h3 class="benefit-title">Už do 24 hodin posloucháte</h3>
+                            <p class="benefit-text">Brzy, ale ne okamžitě. Ruční část tvorby si žádá svůj čas.</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="benefit">
-                    <div class="benefit-icon">✍️</div>
-                    <h3 class="benefit-title">Profi textař po ruce</h3>
-                    <p class="benefit-text">Na generované výstupy vždy hodí oko i zkušený textař.</p>
-                </div>
-                <div class="benefit">
-                    <div class="benefit-icon">🎁</div>
-                    <h3 class="benefit-title">Garance kvality</h3>
-                    <p class="benefit-text">Pokud vám písnička nesedne, druhou verzi vytvoříme zdarma.</p>
-                </div>
-                <div class="benefit">
-                    <div class="benefit-icon">⏱️</div>
-                    <h3 class="benefit-title">Už do 24 hodin posloucháte</h3>
-                    <p class="benefit-text">Brzy, ale ne okamžitě. Ruční část tvorby si žádá svůj čas.</p>
+                
+                <!-- Přehrávač - vpravo -->
+                <div class="player-column">
+                    <h3 class="music-player-title">Poslechněte si ukázky</h3>
+                    
+                    <!-- Zjednodušený přehrávač -->
+                    <div class="music-player" id="music-player">
+                        <div class="player-categories">
+                            <div class="category-tabs">
+                                <button class="category-tab active" data-category="pop">Pop</button>
+                                <button class="category-tab" data-category="akusticka">Akustická</button>
+                                <button class="category-tab" data-category="detska">Dětská</button>
+                                <button class="category-tab" data-category="svatebni">Svatební</button>
+                            </div>
+                            
+                            <div class="tracks-list" id="tracks-list">
+                                <!-- Tracks will be loaded here -->
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             
         </div>
     </section>
     
-    <!-- Music Player Section -->
-    <section class="testimonials" id="ukazky">
-        <div class="container">
-            <h2 class="section-title">Poslechněte si ukázky našich písní</h2>
-            
-            <!-- Zjednodušený přehrávač -->
-            <div class="music-player" id="music-player">
-                <div class="player-categories">
-                    <div class="category-tabs">
-                        <button class="category-tab active" data-category="pop">Pop</button>
-                        <button class="category-tab" data-category="akusticka">Akustická</button>
-                        <button class="category-tab" data-category="detska">Dětská</button>
-                        <button class="category-tab" data-category="svatebni">Svatební</button>
-                    </div>
-                    
-                    <div class="tracks-list" id="tracks-list">
-                        <!-- Tracks will be loaded here -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
+    <!-- Poutavý přechod s obloukem - ze spodní strany -->
+    <div class="hero-transition hero-transition-bottom">
+        <svg class="hero-wave" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M0,0V46.29c47.79,22.2,103.59,32.17,158,28,70.36-5.37,136.33-33.31,206.8-37.5C438.64,32.43,512.34,53.67,583,72.05c69.27,18,138.3,24.88,209.4,13.08,36.15-6,69.85-17.84,104.45-29.34C989.49,25,1113-14.29,1200,52.47V0Z" opacity=".25" fill="currentColor"></path>
+            <path d="M0,0V15.81C13,36.92,27.64,56.86,47.69,72.05,99.41,111.27,165,111,224.58,91.58c31.15-10.15,60.09-26.07,89.67-39.8,40.92-19,84.73-46,130.83-49.67,36.26-2.85,70.9,9.42,98.6,31.56,31.77,25.39,62.32,62,103.63,73,40.44,10.79,81.35-6.69,119.13-24.28s75.16-39,116.92-43.05c59.73-5.85,113.28,22.88,168.9,38.84,30.2,8.66,59,6.17,87.09-7.5,22.43-10.89,48-26.93,60.65-49.24V0Z" opacity=".5" fill="currentColor"></path>
+            <path d="M0,0V5.63C149.93,59,314.09,71.32,475.83,42.57c43-7.64,84.23-20.12,127.61-26.46,59-8.63,112.48,12.24,165.56,35.4C827.93,77.22,886,95.24,951.2,90c86.53-7,172.46-45.71,248.8-84.81V0Z" fill="currentColor"></path>
+        </svg>
+    </div>
 
     <!-- Three steps timeline -->
     <section class="steps-timeline">
@@ -304,6 +328,83 @@
     </section>
     -->
 
+    <!-- Service Types -->
+    <section class="service-types">
+        <div class="container">
+            <h2 class="section-title">Vyberte si typ služby</h2>
+            <p class="section-subtitle">Každý typ má jiný přístup a úroveň personalizace</p>
+            
+            <div class="service-cards">
+                <div class="service-card service-card--standard">
+                    <div class="service-header">
+                        <h3 class="service-name">STANDARD</h3>
+                        <div class="service-price">590 Kč</div>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-feature">
+                            <h4>Text a zpracování</h4>
+                            <p>1 varianta textu ve 2 zpracováních</p>
+                        </div>
+                        <div class="service-feature">
+                            <h4>Korekce textařem</h4>
+                            <p>Zběžné korekce (rýmy, nevhodná slova)</p>
+                        </div>
+                        <div class="service-feature">
+                            <h4>Dodání</h4>
+                            <p>Obvykle do 24 hodin</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-card service-card--premium">
+                    <div class="service-header">
+                        <h3 class="service-name">VÍC MUZIKY</h3>
+                        <div class="service-price">1190 Kč</div>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-feature">
+                            <h4>Text a zpracování</h4>
+                            <p>2 varianty textů, celkem 4 zpracování</p>
+                        </div>
+                        <div class="service-feature">
+                            <h4>Korekce textařem</h4>
+                            <p>Detailní korekce (přepisování, ruční tvorba)</p>
+                        </div>
+                        <div class="service-feature">
+                            <h4>Dodání</h4>
+                            <p>Garantované do 24 hodin</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="service-card service-card--individual">
+                    <div class="service-header">
+                        <h3 class="service-name">INDIVIDUÁLNÍ</h3>
+                        <div class="service-price">2390 Kč</div>
+                    </div>
+                    <div class="service-content">
+                        <div class="service-feature">
+                            <h4>Konzultace</h4>
+                            <p>Osobní konzultace s textařem</p>
+                        </div>
+                        <div class="service-feature">
+                            <h4>Proces</h4>
+                            <p>Příprava textu a hudby s úpravami</p>
+                        </div>
+                        <div class="service-feature">
+                            <h4>Dodání</h4>
+                            <p>Do 7 dnů od konzultace</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="service-cta">
+                <a href="#contact" class="btn-primary">Vybrat variantu</a>
+            </div>
+        </div>
+    </section>
+
     <!-- FAQ Section -->
     <section class="faq">
         <div class="container">
@@ -384,93 +485,6 @@
         </div>
     </section>
 
-    <!-- Service Types -->
-    <section class="service-types">
-        <div class="container">
-            <h2 class="section-title">Vyberte si typ služby</h2>
-            <p class="section-subtitle">Každý typ má jiný přístup a úroveň personalizace</p>
-            
-            <div class="service-cards">
-                <div class="service-card service-card--standard">
-                    <div class="service-header">
-                        <h3 class="service-name">STANDARD</h3>
-                        <div class="service-price">590 Kč</div>
-                        <div class="service-badge">Nejpopulárnější</div>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-feature">
-                            <h4>Text a zpracování</h4>
-                            <p>Písnička podle zadání - 1 varianta textu ve 2 zpracováních</p>
-                        </div>
-                        <div class="service-feature">
-                            <h4>Korekce textařem</h4>
-                            <p>Zběžné korekce textařem (rýmy, nevhodná slova), bez výraznějších zásahů</p>
-                        </div>
-                        <div class="service-feature">
-                            <h4>Dodání</h4>
-                            <p>Obvykle do 24 hodin, bez garance (při plném vytížení textařů se může posunout)</p>
-                        </div>
-                        <div class="service-feature">
-                            <h4>Opravy</h4>
-                            <p>1 možnost opravy</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="service-card service-card--premium">
-                    <div class="service-header">
-                        <h3 class="service-name">VÍC MUZIKY</h3>
-                        <div class="service-price">1190 Kč</div>
-                        <div class="service-badge service-badge--premium">Doporučujeme</div>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-feature">
-                            <h4>Text a zpracování</h4>
-                            <p>Písnička podle zadání - 2 varianty textů, celkem 4 zpracování</p>
-                        </div>
-                        <div class="service-feature">
-                            <h4>Korekce textařem</h4>
-                            <p>Detailní korekce textařem (přepisování, částečná ruční tvorba)</p>
-                        </div>
-                        <div class="service-feature">
-                            <h4>Dodání</h4>
-                            <p>Garantované dodání do 24 hodin</p>
-                        </div>
-                        <div class="service-feature">
-                            <h4>Opravy</h4>
-                            <p>1 možnost opravy</p>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="service-card service-card--individual">
-                    <div class="service-header">
-                        <h3 class="service-name">INDIVIDUÁLNÍ</h3>
-                        <div class="service-price">2390 Kč</div>
-                        <div class="service-badge service-badge--individual">Nejvyšší úroveň</div>
-                    </div>
-                    <div class="service-content">
-                        <div class="service-feature">
-                            <h4>Konzultace</h4>
-                            <p>Osobní konzultace vašich přání přímo s textařem (e-mail/telefon)</p>
-                        </div>
-                        <div class="service-feature">
-                            <h4>Proces</h4>
-                            <p>Příprava textu (2 možné úpravy), až následně generování hudby (2 možné úpravy)</p>
-                        </div>
-                        <div class="service-feature">
-                            <h4>Dodání</h4>
-                            <p>Dodání obvykle do 7 dnů od konzultace</p>
-                        </div>
-                        <div class="service-feature">
-                            <h4>Písnička</h4>
-                            <p>Písnička podle zadání</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
 
     <!-- Contact CTA -->
     <section id="contact" class="contact-cta">
