@@ -417,9 +417,8 @@ body {
     padding: 5rem 0;
     background: linear-gradient(
         180deg,
-        #ffffff 0%,
-        rgba(34, 197, 94, 0.06) 55%,
-        rgba(34, 197, 94, 0.12) 100%
+        #faf6ef 0%,
+        #22c55e 100%
     );
 }
 
@@ -920,11 +919,59 @@ body {
     content: none !important; /* remove dark overlay from base .hero */
 }
 
-/* Section separator for clear division */
-.section-separator {
-    height: 24px;
-    background: linear-gradient(180deg, rgba(15, 23, 42, 0.06), rgba(15, 23, 42, 0));
-    box-shadow: inset 0 1px 0 rgba(15, 23, 42, 0.08);
+/* Poutavý přechod s obloukem */
+.hero-transition {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    overflow: hidden;
+    background: linear-gradient(180deg, var(--warm-beige) 0%, var(--warm-cream) 35%, var(--white) 100%);
+}
+
+.hero-wave {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    color: #0ea5e9;
+    transform: rotate(180deg);
+    animation: waveFloat 6s ease-in-out infinite;
+}
+
+@keyframes waveFloat {
+    0%, 100% {
+        transform: rotate(180deg) translateY(0px);
+    }
+    50% {
+        transform: rotate(180deg) translateY(-10px);
+    }
+}
+
+/* Spodní oblouk - opačná animace */
+.hero-transition-bottom {
+    background: linear-gradient(180deg, #faf6ef 0%, #fffdf8 35%, #ffffff 100%);
+    overflow: hidden;
+    position: relative;
+}
+
+.hero-transition-bottom .hero-wave {
+    transform: rotate(0deg); /* Bez rotace pro spodní oblouk */
+    animation: waveFloatBottom 6s ease-in-out infinite;
+    animation-delay: 3s; /* Opačná fáze */
+    color: #0fbade; /* Požadovaná barva */
+    margin-bottom: -2px; /* Odstraní tenkou linku */
+    position: relative;
+    z-index: 1;
+}
+
+@keyframes waveFloatBottom {
+    0%, 100% {
+        transform: rotate(0deg) translateY(0px);
+    }
+    50% {
+        transform: rotate(0deg) translateY(-10px);
+    }
 }
 
 /* Strengthen spacing for sections */
@@ -971,7 +1018,7 @@ body {
 
 /* Turquoise variant for contrast with hero */
 .how-it-works--turquoise {
-    background: linear-gradient(180deg, #0fbadf 0%, #06b6d4 60%, #22d3ee 100%);
+    background: #0fbade;
     border-top: 0;
     position: relative;
     overflow: hidden;
@@ -1452,8 +1499,10 @@ body {
 /* Ensure separator transitions nicely into turquoise */
 .section-separator + .how-it-works--turquoise { margin-top: 0; }
 
+/* Jemný oddělovač sekcí */
+
 /* Steps timeline section */
-.steps-timeline { padding: 5rem 0; background: linear-gradient(180deg, #faf6ef 0%, #fffdf8 35%, #ffffff 100%); }
+.steps-timeline { padding: 5rem 0; background: linear-gradient(180deg, #ffffff 0%, #fffdf8 35%, #faf6ef 100%); }
 .steps-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 2.5rem; align-items: center; }
 .steps-left { text-align: center; }
 .steps-image { max-width: 540px; width: 100%; height: auto; filter: drop-shadow(0 10px 30px rgba(2,132,199,0.25)); }
@@ -1476,28 +1525,12 @@ body {
 
 /* Service Types Section */
 .service-types {
-    padding: 4rem 0;
-    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+    padding: 3rem 0;
+    background: #f8fafc;
     position: relative;
 }
 
-.service-types::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 20%, rgba(14, 165, 233, 0.05) 0%, transparent 50%),
-        radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.05) 0%, transparent 50%);
-    pointer-events: none;
-}
 
-.service-types .container {
-    position: relative;
-    z-index: 2;
-}
 
 .service-cards {
     display: grid;
@@ -1509,7 +1542,7 @@ body {
 .service-card {
     background: rgba(255, 255, 255, 0.95);
     border-radius: 20px;
-    padding: 2rem;
+    padding: 1.5rem;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     position: relative;
@@ -1540,7 +1573,7 @@ body {
 
 .service-header {
     text-align: center;
-    margin-bottom: 2rem;
+    margin-bottom: 1.5rem;
     position: relative;
 }
 
@@ -1589,7 +1622,7 @@ body {
 
 
 .service-feature {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .service-feature h4 {
@@ -1606,10 +1639,32 @@ body {
     margin: 0;
 }
 
+.service-cta {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.service-cta .btn-primary {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+.service-cta .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+    filter: brightness(1.05);
+}
+
 /* Responsive service types */
 @media (max-width: 768px) {
     .service-types {
-        padding: 3rem 0;
+        padding: 2rem 0;
     }
     
     .service-cards {
@@ -1619,7 +1674,7 @@ body {
     }
     
     .service-card {
-        padding: 1.5rem;
+        padding: 1.25rem;
     }
     
     .service-card--premium {
@@ -1629,12 +1684,22 @@ body {
     .service-card--premium:hover {
         transform: translateY(-5px);
     }
+    
+    .service-cta {
+        margin-top: 2rem;
+    }
+    
+    .service-cta .btn-primary {
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+    }
 }
+
 
 /* FAQ Section */
 .faq {
     padding: 5rem 0;
-    background: var(--white);
+    background: #f8fafc;
 }
 
 .faq-list {
@@ -1643,6 +1708,7 @@ body {
 }
 
 .faq-item {
+    background: white;
     border: 1px solid var(--gray-200);
     border-radius: 12px;
     margin-bottom: 1rem;
@@ -1671,7 +1737,7 @@ body {
 }
 
 .faq-question:hover {
-    background: var(--gray-50);
+    background: white;
 }
 
 .faq-icon {
@@ -1806,12 +1872,84 @@ body:not(.homepage) .top-player { display: none; }
     font-size: 1.1rem;
 }
 
+/* Kompaktní layout: výhody vlevo, přehrávač vpravo */
+.benefits-player-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: start;
+    margin-top: 2rem;
+}
+
+/* Výhody - vlevo pod sebou */
+.benefits-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.benefit-compact {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.benefit-compact:hover {
+    background: rgba(255, 255, 255, 1);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.benefit-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+    margin-top: 0.25rem;
+}
+
+.benefit-content {
+    flex: 1;
+}
+
+.benefit-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 0.5rem;
+}
+
+.benefit-text {
+    font-size: 0.9rem;
+    color: #475569;
+    line-height: 1.5;
+    font-weight: 500;
+}
+
+/* Přehrávač - vpravo */
+.player-column {
+    display: flex;
+    flex-direction: column;
+}
+
+.music-player-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
 /* Zjednodušený přehrávač */
 .music-player {
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    margin: 2rem auto;
+    margin: 0 auto;
     max-width: 800px;
     overflow: hidden;
     position: relative;
@@ -1922,14 +2060,93 @@ body:not(.homepage) .top-player { display: none; }
 
 /* Responsive design */
 @media (max-width: 768px) {
+    .hero-transition {
+        height: 80px;
+    }
+    
+    .hero-wave {
+        animation: waveFloat 8s ease-in-out infinite;
+    }
+    
+    .hero-transition-bottom .hero-wave {
+        animation: waveFloatBottom 8s ease-in-out infinite;
+        animation-delay: 4s;
+        transform: rotate(0deg);
+        margin-bottom: -3px; /* Větší offset pro užší obrazovky */
+    }
+    
+    /* Speciální pravidlo pro velmi úzké obrazovky */
+    @media (max-width: 480px) {
+        .hero-transition-bottom .hero-wave {
+            margin-bottom: -4px; /* Ještě větší offset pro velmi úzké obrazovky */
+        }
+    }
+    
+    .benefits-player-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
+    }
+    
+    .benefits-column {
+        gap: 1rem;
+    }
+    
+    .benefit-compact {
+        padding: 0.75rem;
+        gap: 0.75rem;
+    }
+    
+    .benefit-icon {
+        font-size: 1.25rem;
+    }
+    
+    .benefit-title {
+        font-size: 0.9rem;
+    }
+    
+    .benefit-text {
+        font-size: 0.85rem;
+    }
+    
+    .music-player-title {
+        font-size: 1.25rem;
+        margin-bottom: 1rem;
+    }
+    
+    .music-player {
+        margin: 0;
+        max-width: none;
+    }
+    
+    .player-categories {
+        padding: 1rem;
+    }
+    
     .category-tabs {
         justify-content: center;
+        gap: 0.25rem;
+    }
+    
+    .category-tab {
+        padding: 0.3rem 0.6rem;
+        font-size: 0.8rem;
     }
     
     .track-item {
         flex-direction: column;
         gap: 0.75rem;
         text-align: center;
+        padding: 0.4rem;
+    }
+    
+    .track-title {
+        font-size: 0.9rem;
+    }
+    
+    .track-play-btn {
+        width: 24px;
+        height: 24px;
+        font-size: 0.6rem;
     }
 }
 .top-player-container { max-width: 1200px; margin: 0 auto; padding: 0.4rem 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
