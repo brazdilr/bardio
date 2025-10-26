@@ -472,6 +472,7 @@ class MusicPlayer {
     loadCategory(category) {
         this.currentCategory = category;
         this.currentTrack = 0;
+        this.isPlaying = false; // Reset playing state when switching categories
         
         // Update active tab
         document.querySelectorAll('.category-tab').forEach(tab => {
@@ -504,7 +505,16 @@ class MusicPlayer {
         
         console.log('Tracks rendered, setting up click listeners');
         
-        // Add click listeners to play buttons
+        // Add click listeners to entire track items
+        this.tracksList.querySelectorAll('.track-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                const index = parseInt(item.getAttribute('data-index'));
+                console.log('Track item clicked:', index);
+                this.toggleTrackPlay(index);
+            });
+        });
+        
+        // Add click listeners to play buttons (prevent event bubbling)
         this.tracksList.querySelectorAll('.track-play-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 e.stopPropagation();
