@@ -617,6 +617,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initFAQ();
     initMusicPlayer();
     initTimeline();
+    initParallax();
 });
 
 window.addEventListener('pageshow', (e) => { 
@@ -654,4 +655,63 @@ function initTimeline() {
             }
         });
     });
+}
+
+// Parallax scroll effect - oblouk + how it works + kompenzace mezery
+function initParallax() {
+    const hero = document.querySelector('.hero');
+    const heroTransition = document.querySelector('.hero-transition');
+    const howItWorks = document.querySelector('.how-it-works');
+    const heroTransitionBottom = document.querySelector('.hero-transition-bottom');
+    const stepsTimeline = document.querySelector('.steps-timeline');
+
+    if (!hero || !heroTransition || !howItWorks || !heroTransitionBottom || !stepsTimeline) return;
+
+    // volitelně: lepší výkon
+    [heroTransition, howItWorks, heroTransitionBottom].forEach(el => {
+        el.style.willChange = 'transform';
+    });
+
+    let ticking = false;
+    let lastRate = null;
+    let lastMargin = null;
+
+    function apply(rate) {
+        // 1) parallax pro vizuálně spojený celek (včetně horního oblouku)
+        heroTransition.style.transform = `translateY(${rate}px)`;
+        howItWorks.style.transform = `translateY(${rate}px)`;
+        heroTransitionBottom.style.transform = `translateY(${rate}px)`;
+
+        // 2) kompenzace díry: posuň další sekci V TOKU LAYOUTU
+        // rate je záporný (např. -120px) -> margin-top dáme na stejnou hodnotu
+        if (lastMargin !== rate) {
+            stepsTimeline.style.marginTop = `${rate}px`;
+            lastMargin = rate;
+        }
+    }
+
+    function update() {
+        const scrolled = window.pageYOffset || 0;
+        const heroHeight = hero.offsetHeight || 0;
+
+        // posouváme jen, dokud „trvá" hero
+        const raw = -0.5 * Math.min(scrolled, heroHeight);
+        if (raw !== lastRate) {
+            apply(raw);
+            lastRate = raw;
+        }
+    }
+
+    function onScroll() {
+        if (!ticking) {
+            requestAnimationFrame(() => {
+                update();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    update();
 }
