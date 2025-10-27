@@ -422,50 +422,162 @@ body {
     );
 }
 
-.service-cards {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+.services-timeline {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
     gap: 2rem;
     margin-top: 3rem;
+    margin-bottom: 8rem;
+    max-width: 1000px;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
 }
 
-.service-card {
-    background: var(--white);
-    padding: 2rem;
-    border-radius: 1rem;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-    transition: transform 0.3s, box-shadow 0.3s;
+/* Services Timeline - specifické styly */
+.services-timeline .timeline-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.95);
+    padding: 1.5rem 1rem;
+    border-radius: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    min-width: 120px;
+    flex: 0 0 auto;
+    position: relative;
     text-align: center;
 }
 
-.service-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+.services-timeline .timeline-item:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 1);
 }
 
-.service-icon {
-    font-size: 3rem;
-    margin-bottom: 1rem;
+.services-timeline .timeline-item.active {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.15);
+    background: rgba(255, 255, 255, 1);
 }
 
-.service-card h3 {
-    font-size: 1.5rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
+.services-timeline .timeline-icon {
+    font-size: 2.5rem;
+    margin-bottom: 0.75rem;
+    display: block;
+}
+
+.services-timeline .timeline-label {
+    font-size: 0.9rem;
+    font-weight: 700;
     color: var(--gray-900);
+    line-height: 1.2;
 }
 
-.service-card p {
-    color: var(--gray-600);
-    margin-bottom: 1.5rem;
+.services-timeline .timeline-description {
+    position: absolute;
+    top: calc(100% + 1rem);
+    left: 50%;
+    transform: translateX(-50%) translateY(-10px);
+    background: rgba(255, 255, 255, 0.98);
+    padding: 1.5rem;
+    border-radius: 20px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    z-index: 9999;
+    min-width: 320px;
+    max-width: 450px;
+    white-space: normal;
+    backdrop-filter: blur(10px);
+}
+
+.services-timeline .timeline-description::before {
+    content: '';
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 12px solid transparent;
+    border-right: 12px solid transparent;
+    border-bottom: 12px solid rgba(255, 255, 255, 0.98);
+    filter: drop-shadow(0 -4px 8px rgba(0, 0, 0, 0.1));
+}
+
+.services-timeline .timeline-item:hover .timeline-description,
+.services-timeline .timeline-item.active .timeline-description {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%) translateY(0);
+}
+
+.services-timeline .timeline-description p {
+    font-size: 0.95rem;
+    color: var(--gray-700);
     line-height: 1.6;
+    margin: 0;
+    text-align: left;
 }
 
-.service-link {
-    color: var(--primary);
-    font-weight: 600;
+.services-cta {
+    text-align: center;
+    margin-top: 3rem;
+}
+
+.services-cta .btn-primary {
+    display: inline-block;
+    padding: 1rem 2.5rem;
+    border-radius: 50px;
+    font-size: 1.1rem;
+    font-weight: 700;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(14, 165, 233, 0.3);
+}
+
+.services-cta .btn-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+    filter: brightness(1.05);
+}
+
+/* Jednoduchý oddělovač */
+.section-divider {
+    padding: 1rem 0;
+    background: #ffffff;
+}
+
+.divider-line {
+    width: 100%;
+    height: 1px;
+    background: #0fbade;
+}
+
+@media (max-width: 768px) {
+    .section-divider {
+        padding: 1.5rem 0;
+    }
+    
+    .divider-line {
+        width: 200px;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-divider {
+        padding: 1rem 0;
+    }
+    
+    .divider-line {
+        width: 150px;
+    }
 }
 
 .service-link:hover {
@@ -716,8 +828,114 @@ body {
         grid-template-columns: 1fr;
     }
     
-    .service-cards {
+    .services-timeline {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 1.5rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        max-width: 600px;
+    }
+    
+    .services-timeline .timeline-item {
+        min-width: 100px;
+        padding: 1.25rem 0.75rem;
+    }
+    
+.services-timeline .timeline-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+}
+
+.services-timeline .timeline-icon img {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    filter: brightness(0) saturate(100%) invert(27%) sepia(51%) saturate(2878%) hue-rotate(346deg) brightness(104%) contrast(97%);
+}
+    
+    .services-timeline .timeline-label {
+        font-size: 0.8rem;
+    }
+    
+    .services-cta {
+        margin-top: 2rem;
+    }
+    
+    .services-cta .btn-primary {
+        padding: 0.875rem 2rem;
+        font-size: 1rem;
+    }
+    
+    .services-timeline .timeline-description {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        border-radius: 20px 20px 0 0;
+        margin-top: 0;
+        max-height: 50vh;
+        overflow-y: auto;
+        white-space: normal;
+        min-width: auto;
+        max-width: none;
+        transform: translateY(100%);
+    }
+    
+    .services-timeline .timeline-description::before {
+        display: none;
+    }
+    
+    .services-timeline .timeline-item:hover .timeline-description,
+    .services-timeline .timeline-item.active .timeline-description {
+        transform: translateY(0);
+    }
+    
+    .services-transition {
+        height: 40px;
+    }
+    
+    .services-wave {
+        animation: servicesWaveFloat 10s ease-in-out infinite;
+    }
+}
+
+/* Velmi malé obrazovky - 1 sloupec */
+@media (max-width: 480px) {
+    .services-timeline {
         grid-template-columns: 1fr;
+        grid-template-rows: repeat(6, 1fr);
+        max-width: 300px;
+        gap: 1rem;
+    }
+    
+    .services-timeline .timeline-item {
+        min-width: auto;
+        padding: 1rem 0.5rem;
+    }
+    
+    .services-timeline .timeline-icon {
+        font-size: 1.8rem;
+        margin-bottom: 0.4rem;
+    }
+    
+    .services-timeline .timeline-label {
+        font-size: 0.75rem;
+    }
+    
+    .services-transition {
+        height: 30px;
+    }
+    
+    .services-wave {
+        animation: servicesWaveFloat 12s ease-in-out infinite;
     }
     
     .testimonial-cards {
@@ -978,7 +1196,6 @@ body {
 .how-it-works { padding: 5rem 0 5rem; border-top: 1px solid rgba(15, 23, 42, 0.08); background: #fff; }
 .services { padding: 5rem 0; }
 .testimonials { padding: 5rem 0; background: #fff; }
-.contact-cta { margin-top: 2rem; }
 
 /* Benefits grid */
 .benefits { 
@@ -1547,6 +1764,9 @@ body {
     transition: all 0.3s ease;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .service-card:hover {
@@ -1658,6 +1878,68 @@ body {
 .service-cta .btn-primary:hover {
     transform: translateY(-3px);
     box-shadow: 0 8px 25px rgba(14, 165, 233, 0.4);
+    filter: brightness(1.05);
+}
+
+/* Service content */
+.service-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Service features list */
+.service-features {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    flex: 1;
+}
+
+.service-features li {
+    padding: 0.5rem 0;
+    border-bottom: 1px solid rgba(15, 186, 222, 0.1);
+    font-size: 1rem;
+    line-height: 1.4;
+    color: #475569;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.service-features li:last-child {
+    border-bottom: none;
+}
+
+.service-features li::before {
+    content: "•";
+    color: #0fbade;
+    font-weight: bold;
+    position: absolute;
+    left: 0;
+    top: 0.5rem;
+}
+
+/* Service button in cards */
+.service-button {
+    margin-top: auto;
+    text-align: center;
+    padding-top: 1.5rem;
+}
+
+.service-button .btn-small {
+    display: inline-block;
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(15, 186, 222, 0.2);
+}
+
+.service-button .btn-small:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(15, 186, 222, 0.3);
     filter: brightness(1.05);
 }
 
