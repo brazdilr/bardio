@@ -616,6 +616,7 @@ function initMusicPlayer() {
 document.addEventListener('DOMContentLoaded', () => {
     initFAQ();
     initMusicPlayer();
+    initTimeline();
 });
 
 window.addEventListener('pageshow', (e) => { 
@@ -624,3 +625,33 @@ window.addEventListener('pageshow', (e) => {
         initMusicPlayer(); 
     }
 });
+
+// Timeline functionality
+function initTimeline() {
+    const timelineItems = document.querySelectorAll('.timeline-item');
+    
+    timelineItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            // Only handle clicks on mobile/touch devices
+            if (window.innerWidth <= 768) {
+                e.preventDefault();
+                
+                const isActive = item.classList.contains('active');
+                
+                // Close all other timeline items
+                timelineItems.forEach(otherItem => {
+                    if (otherItem !== item) {
+                        otherItem.classList.remove('active');
+                    }
+                });
+                
+                // Toggle current item
+                if (isActive) {
+                    item.classList.remove('active');
+                } else {
+                    item.classList.add('active');
+                }
+            }
+        });
+    });
+}
