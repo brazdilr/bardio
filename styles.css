@@ -573,6 +573,7 @@ body {
 }
 
 @media (max-width: 768px) {
+    .services-timeline { padding-left: 1rem; padding-right: 1rem; }
     .section-divider {
         padding: 1.5rem 0;
     }
@@ -980,6 +981,8 @@ body {
 /* Velmi malé obrazovky - 1 sloupec s horizontálním layoutem */
 @media (max-width: 480px) {
     .services-timeline {
+        padding-left: 1rem !important;
+        padding-right: 1rem !important;
         display: flex !important;
         flex-direction: column !important;
         max-width: 100% !important;
@@ -1048,7 +1051,7 @@ body {
 
 @media (max-width: 480px) {
     .container {
-        padding: 0 0.5rem;
+        padding: 0 1rem;
     }
     
     .hero {
@@ -1112,10 +1115,11 @@ body {
     font-size: clamp(2rem, 4vw, 3rem);
     line-height: 1.1;
     margin-bottom: 1.25rem;
+    margin-top: 0.5rem; /* slight offset from top */
 }
 .hero-description {
     color: var(--gray-700);
-    font-size: 1.05rem;
+    font-size: 1.2rem; /* larger for better readability */
     margin-bottom: 1.5rem;
 }
 .hero-bullets {
@@ -1184,6 +1188,29 @@ body {
     .hero-v2 { padding: 2.5rem 0 1.5rem; min-height: auto; }
 }
 
+/* Tighten hero vertical padding on mobile so image isn't pushed down */
+@media (max-width: 768px) {
+    .hero-v2 { padding: 1.5rem 0 1rem; }
+    /* ensure full image visible by reserving space below on mobile */
+    .hero-right { padding-bottom: 2rem; margin-bottom: 2rem; margin-top: 0.5rem; }
+    /* ensure heading isn't stuck to the top on mobile */
+    .hero.hero-v2 .hero-title { margin-top: 1rem; }
+    /* emphasize text sizes on mobile */
+    .hero.hero-v2 .hero-title { font-size: 2.25rem; }
+    .hero.hero-v2 .hero-description { font-size: 1.25rem; line-height: 1.7; }
+    .hero-actions .btn, .hero-btn { padding: 0.9rem 1.2rem; font-size: 1.05rem; }
+}
+
+@media (max-width: 480px) {
+    .hero-v2 { padding: 1rem 0 0.75rem; }
+    /* a bit more space on very small screens */
+    .hero-right { padding-bottom: 2.5rem; margin-bottom: 2.5rem; margin-top: 0.25rem; }
+    /* extra top offset for very small devices */
+    .hero.hero-v2 .hero-title { margin-top: 3rem; }
+    .hero.hero-v2 .hero-title { font-size: 2.5rem; }
+    .hero.hero-v2 .hero-description { font-size: 1.3rem; }
+}
+
 /* Beige gradient background and decorative bard image */
 .hero-v2 {
     /* soft beige gradient */
@@ -1214,6 +1241,23 @@ body {
         background-position: center bottom;
         background-size: 80%;
         /* opacity: 0.85; */
+    }
+}
+
+/* Tuning hero image position on mobile so it's not too low */
+@media (max-width: 768px) {
+    .hero-right { min-height: 360px; }
+    .hero-right::after {
+        background-position: center top;
+        background-size: contain; /* scale flexibly, no cropping */
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-right { min-height: 300px; }
+    .hero-right::after {
+        background-position: center top;
+        background-size: contain; /* ensure full image visible */
     }
 }
 
@@ -1882,6 +1926,22 @@ body {
     border-top: 4px solid #8b5cf6;
 }
 
+.service-button {
+    margin-top: 1.5rem;
+    text-align: center;
+    padding-top: 1.5rem;
+}
+
+.service-button .btn-primary {
+    padding: 0.6rem 1.5rem;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(15, 186, 222, 0.2);
+}
+
 .service-header {
     text-align: center;
     margin-bottom: 1.5rem;
@@ -1996,6 +2056,16 @@ body {
         transform: translateY(-5px);
     }
     
+    .service-button {
+        margin-top: 1rem;
+        padding-top: 1rem;
+    }
+    
+    .service-button .btn-primary {
+        padding: 0.5rem 1.25rem;
+        font-size: 0.85rem;
+    }
+    
     .service-cta {
         margin-top: 2rem;
     }
@@ -2079,20 +2149,9 @@ body {
     margin: 0;
 }
 
-/* SimpleShop embed font normalization to Poppins */
-[data-SimpleShopForm],
-[data-SimpleShopForm] * {
-    font-family: 'Poppins', system-ui, -apple-system, sans-serif !important;
-}
 
-/* SimpleShop embed visual styling */
-[data-SimpleShopForm] {
-    /* Soft, welcoming gradient background with subtle contrast */
-    background: linear-gradient(180deg, rgba(14,165,233,0.10) 0%, rgba(34,197,94,0.12) 100%);
-    border: 1px solid rgba(15,23,42,0.08);
-    border-radius: 16px;
-    padding: 1rem;
-}
+
+
 /* Inner card look (the script usually injects a wrapper div) */
 [data-SimpleShopForm] > * {
     background: #ffffff;
@@ -2100,63 +2159,7 @@ body {
     box-shadow: 0 10px 30px rgba(15, 23, 42, 0.10);
     padding: 1rem;
 }
-/* Headings and text inside the form */
-[data-SimpleShopForm] h1,
-[data-SimpleShopForm] h2,
-[data-SimpleShopForm] h3 {
-    font-family: 'Poppins', system-ui, -apple-system, sans-serif !important;
-    color: var(--gray-900);
-    margin-bottom: 0.5rem;
-}
-[data-SimpleShopForm] p {
-    color: var(--gray-700);
-}
-/* Inputs, selects, textareas */
-[data-SimpleShopForm] input[type="text"],
-[data-SimpleShopForm] input[type="email"],
-[data-SimpleShopForm] input[type="tel"],
-[data-SimpleShopForm] input[type="number"],
-[data-SimpleShopForm] select,
-[data-SimpleShopForm] textarea {
-    width: 100%;
-    border: 1px solid var(--gray-200);
-    border-radius: 10px;
-    padding: 0.7rem 0.9rem;
-    outline: none;
-    background: #fff;
-    color: var(--gray-900);
-}
-[data-SimpleShopForm] input:focus,
-[data-SimpleShopForm] select:focus,
-[data-SimpleShopForm] textarea:focus {
-    border-color: var(--primary);
-    box-shadow: 0 0 0 3px rgba(14,165,233,0.20);
-}
-/* Buttons */
-[data-SimpleShopForm] button,
-[data-SimpleShopForm] input[type="submit"],
-[data-SimpleShopForm] .btn {
-    background: linear-gradient(135deg, var(--primary), var(--secondary));
-    color: #fff !important;
-    border: 0 !important;
-    border-radius: 999px !important;
-    padding: 0.7rem 1.2rem !important;
-    font-weight: 700;
-    cursor: pointer;
-    transition: transform .15s ease, filter .2s ease, box-shadow .2s ease;
-}
-[data-SimpleShopForm] button:hover,
-[data-SimpleShopForm] input[type="submit"]:hover,
-[data-SimpleShopForm] .btn:hover {
-    filter: brightness(0.95);
-    transform: translateY(-1px);
-}
-/* Minor spacing helpers in case the embed lacks spacing */
-[data-SimpleShopForm] .row,
-[data-SimpleShopForm] .form-row,
-[data-SimpleShopForm] .field {
-    margin-bottom: 0.8rem;
-}
+
 
 /* Thin sticky top player */
 .top-player { position: sticky; top: 64px; z-index: 95; background: rgba(255,255,255,0.85); backdrop-filter: blur(8px); border-bottom: 1px solid rgba(15,23,42,0.08); }
