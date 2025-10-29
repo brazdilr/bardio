@@ -715,3 +715,72 @@ function initParallax() {
     window.addEventListener('scroll', onScroll, { passive: true });
     update();
 }
+
+// scrollování k sekci objednání
+// počká, až se objeví libovolný z daných selektorů
+function waitForAny(selectors, cb, timeoutMs = 10000) {
+    const found = selectors.map(s => document.querySelector(s)).find(Boolean);
+    if (found) return cb(found);
+    const mo = new MutationObserver(() => {
+      const el = selectors.map(s => document.querySelector(s)).find(Boolean);
+      if (el) { mo.disconnect(); cb(el); }
+    });
+    mo.observe(document.documentElement, { childList: true, subtree: true });
+    if (timeoutMs) setTimeout(() => mo.disconnect(), timeoutMs);
+  }
+  
+  function normalize(txt){ return (txt||"").trim().toLowerCase(); }
+  
+  // najde „položku varianty“ podle textu v .label nebo podle value rádia
+  function findVariantItem({ text, value }) {
+    const items = document.querySelectorAll('label.itemLabel.custom-variant');
+    const wantedText = normalize(text);
+    for (const item of items) {
+      const labelDiv = item.querySelector('.label');
+      const input = item.querySelector('input[type="radio"]');
+      const labelText = normalize(labelDiv?.textContent);
+      const valueMatch = value != null && input && input.value == value;
+      const textMatch = wantedText && labelText.includes(wantedText);
+      if (valueMatch || textMatch) {
+        return { item, input };
+      }
+    }
+    return null;
+  }
+  
+  function selectVariant({ text, value }) {
+    const found = findVariantItem({ text, value });
+    if (!found) return false;
+  
+    const { item, input } = found;
+  
+    // 1) klik na celý label
+    item.click();
+  
+    // 2) jistota – klik přímo na radio + změnové eventy
+    if (input) {
+      input.click();
+      input.checked = true;
+      input.dispatchEvent(new Event('input',  { bubbles: true }));
+      input.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    return true;
+  }
+  
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.pick-variant[data-variant], .pick-variant[data-variant-value]');
+    if (!btn) return;
+  
+    const text  = btn.getAttribute('data-variant') || '';
+    const value = btn.hasAttribute('data-variant-value') ? btn.getAttribute('data-variant-value') : null;
+  
+    // scroll k cíli
+    (document.querySelector('#contact') || document.body)
+      .scrollIntoView({ behavior: 'smooth', block: 'start' });
+  
+    // počkej, až SS domaluje strukturu variant
+    waitForAny(
+      ['label.itemLabel.custom-variant', 'input[type="radio"][name*="payment"][value]'],
+      () => { selectVariant({ text, value }); }
+    );
+  });
