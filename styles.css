@@ -2475,3 +2475,11 @@ body:not(.homepage) .top-player { display: none; }
 @media (max-width: 768px) {
   .tp-title { display: none; }
 }
+
+/* Rounded corners for process images to match site boxes */
+.detail-image img {
+    border-radius: 14px;
+    display: block;
+    width: 100%;
+    height: auto;
+}
