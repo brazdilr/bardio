@@ -2289,7 +2289,8 @@ body:not(.homepage) .top-player { display: none; }
     overflow: hidden;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
 }
-.player-video .video-embed iframe {
+.player-video .video-embed iframe,
+.player-video .video-embed video {
     position: absolute;
     inset: 0;
     width: 100%;
@@ -2300,7 +2301,8 @@ body:not(.homepage) .top-player { display: none; }
 /* Desktop: make YouTube embed taller (4:3) to balance benefits height */
 @media (min-width: 901px) {
     .player-video .video-embed { padding-top: 0; }
-    .player-video .video-embed iframe {
+    .player-video .video-embed iframe,
+    .player-video .video-embed video {
         position: static;
         display: block;
         width: 100%;
