@@ -621,6 +621,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initMusicPlayer();
     initTimeline();
     initParallax();
+    initVideoPosterSnapshot();
 });
 
 window.addEventListener('pageshow', (e) => { 
@@ -787,3 +788,64 @@ function waitForAny(selectors, cb, timeoutMs = 10000) {
       () => { selectVariant({ text, value }); }
     );
   });
+
+// Generate poster from video frame at 2s (requires proper CORS)
+function initVideoPosterSnapshot() {
+    const video = document.getElementById('howitworks-video');
+    if (!video) return;
+
+    // Avoid re-running
+    if (video.__snapshotInit) return;
+    video.__snapshotInit = true;
+
+    const snapshotTime = 2; // seconds
+
+    function capture() {
+        try {
+            const canvas = document.createElement('canvas');
+            const width = video.videoWidth;
+            const height = video.videoHeight;
+            if (!width || !height) return;
+            canvas.width = width;
+            canvas.height = height;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, width, height);
+            const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+            // Set as poster (works before first play)
+            video.setAttribute('poster', dataUrl);
+        } catch (e) {
+            // Tainted canvas indicates CORS misconfiguration
+            console.warn('Video snapshot failed (likely CORS):', e);
+        }
+    }
+
+    function seekAndCapture() {
+        // If metadata not ready, wait
+        if (!isFinite(video.duration) || video.readyState < 1) return;
+        const target = Math.min(snapshotTime, Math.max(0, (video.duration || snapshotTime) - 0.1));
+        // Some browsers require a small delay after metadata
+        setTimeout(() => {
+            const onSeeked = () => {
+                video.removeEventListener('seeked', onSeeked);
+                capture();
+                // Return to start so poster shows until play
+                try { video.currentTime = 0; } catch {}
+                if (!video.paused) {
+                    try { video.pause(); } catch {}
+                }
+            };
+            video.addEventListener('seeked', onSeeked, { once: true });
+            try { video.currentTime = target; } catch (e) {
+                // If immediate seek fails, try again soon
+                setTimeout(() => { try { video.currentTime = target; } catch {} }, 150);
+            }
+        }, 60);
+    }
+
+    // Run when metadata is ready
+    if (video.readyState >= 1) {
+        seekAndCapture();
+    } else {
+        video.addEventListener('loadedmetadata', seekAndCapture, { once: true });
+    }
+}
