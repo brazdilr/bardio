@@ -286,7 +286,7 @@ body {
 }
 
 .hero-description {
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     color: var(--gray-200);
     margin-bottom: 2rem;
     line-height: 1.6;
@@ -680,9 +680,16 @@ body {
 
 .footer-content {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 2rem;
     margin-bottom: 2rem;
+    align-items: start;
+}
+@media (max-width: 900px) {
+    .footer-content { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+    .footer-content { grid-template-columns: 1fr; }
 }
 
 .footer-logo {
@@ -1112,27 +1119,28 @@ body {
     margin-bottom: 1rem;
 }
 .hero-title {
-    font-size: clamp(2rem, 4vw, 3rem);
-    line-height: 1.1;
+    font-size: clamp(2.8rem, 4vw, 3.5rem);
+    line-height: 1.3;
     margin-bottom: 1.25rem;
     margin-top: 0.5rem; /* slight offset from top */
 }
 .hero-description {
     color: var(--gray-700);
-    font-size: 1.2rem; /* larger for better readability */
+    font-size: 1.5rem; /* larger for better readability */
     margin-bottom: 1.5rem;
+    line-height: 1,7;
 }
 .hero-bullets {
     list-style: none;
-    margin-bottom: 2rem;
+    margin-bottom: 3rem;
     padding: 0;
 }
 .hero-bullets li {
     position: relative;
     padding-left: 1.5rem;
-    margin-bottom: 0.75rem;
+    margin-bottom: 0.0rem;
     color: var(--gray-700);
-    font-size: 1rem;
+    font-size: 1.2rem;
 }
 .hero-bullets li::before {
     content: "";
@@ -1197,7 +1205,7 @@ body {
     .hero.hero-v2 .hero-title { margin-top: 1rem; }
     /* emphasize text sizes on mobile */
     .hero.hero-v2 .hero-title { font-size: 2.25rem; }
-    .hero.hero-v2 .hero-description { font-size: 1.25rem; line-height: 1.7; }
+    .hero.hero-v2 .hero-description { font-size: 1rem; line-height: 1.7; }
     .hero-actions .btn, .hero-btn { padding: 0.9rem 1.2rem; font-size: 1.05rem; }
 }
 
@@ -1208,7 +1216,7 @@ body {
     /* extra top offset for very small devices */
     .hero.hero-v2 .hero-title { margin-top: 3rem; }
     .hero.hero-v2 .hero-title { font-size: 2.5rem; }
-    .hero.hero-v2 .hero-description { font-size: 1.3rem; }
+    .hero.hero-v2 .hero-description { font-size: 1.2rem; margin-bottom: 2.5rem;}
 }
 
 /* Beige gradient background and decorative bard image */
@@ -2139,7 +2147,7 @@ body {
 }
 
 .faq-item.active .faq-answer {
-    max-height: 200px;
+    max-height: 1000px; /* allow longer answers to be fully visible */
     padding: 0 1.5rem 1.25rem;
 }
 
@@ -2254,8 +2262,51 @@ body:not(.homepage) .top-player { display: none; }
     font-size: 1.5rem;
     font-weight: 700;
     color: #ffffff;
+    margin-top: 2rem;
     margin-bottom: 1.5rem;
     text-align: center;
+}
+
+.music-player-note {
+    text-align: center;
+    color: #e2e8f0;
+    font-size: 0.95rem;
+    margin: -0.5rem 0 1rem 0;
+}
+
+/* YouTube embed above music player */
+.player-video {
+    width: 100%;
+    max-width: 520px;
+    margin: 0 0 1rem 0;
+    align-self: center;
+}
+.player-video .video-embed {
+    position: relative;
+    width: 100%;
+    padding-top: 56.25%; /* 16:9 */
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+}
+.player-video .video-embed iframe {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+}
+
+/* Desktop: make YouTube embed taller (4:3) to balance benefits height */
+@media (min-width: 901px) {
+    .player-video .video-embed { padding-top: 0; }
+    .player-video .video-embed iframe {
+        position: static;
+        display: block;
+        width: 100%;
+        aspect-ratio: 4 / 3;
+        height: auto;
+    }
 }
 
 /* Zjednodušený přehrávač */
@@ -2264,7 +2315,7 @@ body:not(.homepage) .top-player { display: none; }
     border-radius: 16px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     margin: 0 auto;
-    max-width: 800px;
+    max-width: 960px; /* širší přehrávač */
     overflow: hidden;
     position: relative;
     z-index: 10;
@@ -2424,7 +2475,13 @@ body:not(.homepage) .top-player { display: none; }
     
     .music-player-title {
         font-size: 1.25rem;
+        margin-top: 1.5rem;
         margin-bottom: 1rem;
+    }
+
+    .player-video {
+        max-width: 100%;
+        margin-bottom: 0.75rem;
     }
     
     .music-player {
