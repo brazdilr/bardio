@@ -60,11 +60,10 @@
                 </div>
                 
                 <div class="nav-menu" id="nav-menu">
-                    <a href="#home" class="nav-link">Domů</a>
-                    <a href="#services" class="nav-link">Služby</a>
+                    <a href="index.html" class="nav-link">Úvod</a>
                     <a href="jak-to-funguje.html" class="nav-link">Jak to funguje</a>
-                    <a href="#contact" class="nav-link">Kontakt</a>
-                    <a href="#contact" class="nav-btn">Objednat písničku</a>
+                    <a href="kontakt.html" class="nav-link">Kontakt</a>
+                    <a href="#contact" class="nav-btn">Vytvořit zadání</a>
                 </div>
                 
                 <div class="hamburger" id="hamburger">
@@ -112,15 +111,14 @@
             <div class="hero-left">
                 <h1 class="hero-title">Překvapte písničkou. Zvuk? Jako ze studia</h1>
                 <p class="hero-description">
-                    Spojili jsme sílu moderní technologie s citem živých textařů, aby byly písničky na míru dostupné i vám. Stačí jen váš nápad, ostatní je na nás.
-                </p>
+                   Vy dirigujete, textař ladí, technologie komponuje. Vznikne písnička od srdce, která vydá za tisíc slov.</p>
                 <ul class="hero-bullets">
-                    <li>Za zlomek ceny studiové nahrávky</li>
-                    <li>Na libovolné téma, výběr z 18 hudebních stylů</li>
-                    <li>Už do 24 hodin ve vašich uších</li>
+                
+                    <li>Sami si určíte téma, styl i náladu</li>
+                    <li>Už do 24 hodin můžete poslouchat</li>
                 </ul>
                 <div class="hero-actions">
-                    <a href="#contact" class="btn btn-primary">Objednat písničku</a>
+                    <a href="#contact" class="btn btn-primary">Vytvořit zadání</a>
                     <a href="jak-to-funguje.html" class="btn btn-secondary">Jak to funguje</a>
                 </div>
             </div>
@@ -143,17 +141,9 @@
             <h2 class="section-title">Stačí pár slov. Ostatní je na nás</h2>
             <p class="section-subtitle"></p>
 
-            <!-- Kompaktní layout: výhody vlevo, přehrávač vpravo -->
+            <!-- Jedna řada: vlevo všechny 4 benefity pod sebou, vpravo video -->
             <div class="benefits-player-grid">
-                <!-- Výhody - vlevo pod sebou -->
                 <div class="benefits-column">
-                    <div class="benefit-compact">
-                        <div class="benefit-icon">🧠</div>
-                        <div class="benefit-content">
-                            <h3 class="benefit-title">To nejlepší, co AI dokáže</h3>
-                            <p class="benefit-text">Máme licence k pokročilým produkčním nástrojům.</p>
-                        </div>
-                    </div>
                     <div class="benefit-compact">
                         <div class="benefit-icon">✍️</div>
                         <div class="benefit-content">
@@ -162,9 +152,16 @@
                         </div>
                     </div>
                     <div class="benefit-compact">
+                        <div class="benefit-icon">🧠</div>
+                        <div class="benefit-content">
+                            <h3 class="benefit-title">To nejlepší, co s AI dokážeme</h3>
+                            <p class="benefit-text">Při tvorbě používáme licence k nejvýkonnějším AI nástrojům.</p>
+                        </div>
+                    </div>
+                    <div class="benefit-compact">
                         <div class="benefit-icon">🎁</div>
                         <div class="benefit-content">
-                            <h3 class="benefit-title">Garance kvality</h3>
+                            <h3 class="benefit-title">Garance spokojenosti</h3>
                             <p class="benefit-text">Pokud vám písnička nesedne, druhou verzi vytvoříme zdarma.</p>
                         </div>
                     </div>
@@ -176,25 +173,32 @@
                         </div>
                     </div>
                 </div>
-                
-                <!-- Přehrávač - vpravo -->
-                <div class="player-column">
-                    <h3 class="music-player-title">Poslechněte si ukázky</h3>
-                    
-                    <!-- Zjednodušený přehrávač -->
-                    <div class="music-player" id="music-player">
-                        <div class="player-categories">
-                            <div class="category-tabs">
-                                <button class="category-tab active" data-category="pop">Pop</button>
-                                <button class="category-tab" data-category="akusticka">Akustická</button>
-                                <button class="category-tab" data-category="detska">Dětská</button>
-                                <button class="category-tab" data-category="svatebni">Svatební</button>
-                            </div>
-                            
-                            <div class="tracks-list" id="tracks-list">
-                                <!-- Tracks will be loaded here -->
-                            </div>
+                <div>
+                    <div class="player-video">
+                        <div class="video-embed">
+                            <iframe src="https://player.vimeo.com/video/1133064725?badge=0&amp;autopause=0&amp;player_id=0&amp;app_id=58479?dnt=1" frameborder="0" allow="autoplay; fullscreen; picture-in-picture; clipboard-write; encrypted-media; web-share" referrerpolicy="strict-origin-when-cross-origin" title="#1 Ukázky písniček na míru - Bardio.cz"></iframe>
                         </div>
+                    </div>
+                </div>
+            </div>
+
+            
+            <!-- Samostatně přehrávač, o něco širší -->
+            <h3 class="music-player-title">Poslechněte si celé ukázky</h3>
+            <div class="music-player-note">Další průběžně připravujeme</div>
+            <div class="music-player" id="music-player">
+                <div class="player-categories">
+                    <div class="category-tabs">
+                        <button class="category-tab active" data-category="pop">Pop</button>
+                        <button class="category-tab" data-category="rock">Rock</button>
+                        <button class="category-tab" data-category="rap">Rap</button>
+                        <button class="category-tab" data-category="dojemne">Dojemné</button>
+                        <button class="category-tab" data-category="detske">Dětské</button>
+                        <button class="category-tab" data-category="dechovka">Dechovka</button>
+                    </div>
+                    
+                    <div class="tracks-list" id="tracks-list">
+                        <!-- Tracks will be loaded here -->
                     </div>
                 </div>
             </div>
@@ -224,21 +228,21 @@
                         <div class="timeline-dot">1</div>
                         <div class="timeline-content">
                             <h3>Předáte myšlenku, určíte styl</h3>
-                            <p>Krátce popíšete, o čem má písnička být a v jakém stylu. Máte vlastní text? Sem s ním, rádi ho zhudebníme.</p>
+                            <p>Popíšete, o čem má písnička být a v jakém stylu. Buď do detailu, nebo nám dáte volné ruce. Máte vlastní text? Sem s ním, rádi ho zhudebníme.</p>
                         </div>
                     </div>
                     <div class="timeline-item">
                         <div class="timeline-dot">2</div>
                         <div class="timeline-content">
                             <h3>Začneme kouzlit</h3>
-                            <p>Generujeme. Přepisujeme. Skládáme, tvoříme a mixujeme. Technologie a lidé pracují ruku v ruce.</p>
+                            <p>Generujeme. Upravujeme. Skládáme, tvoříme a mixujeme. Lidé a technologie pracují ruku v ruce.</p>
                         </div>
                     </div>
                     <div class="timeline-item">
                         <div class="timeline-dot">3</div>
                         <div class="timeline-content">
-                            <h3>Píseň máte v e-mailu</h3>
-                            <p>Ozveme se hned, jak práci dokončíme. Pošleme odkaz ke stažení písně a malé překvapení jako bonus.</p>
+                            <h3>Pošleme hotovou písničku</h3>
+                            <p>Ozveme se hned, jak práci dokončíme. Pošleme e-mail, v případě zájmu i SMS. V e-mailu najdete odkaz na osobní stránku, kde bude písnička ke stažení i přehrávání. Na stažení máte 30 dnů, pak stránku deaktivujeme.</p>
                         </div>
                     </div>
                 </div>
@@ -299,8 +303,8 @@
     <!-- Service Types -->
     <section class="service-types">
         <div class="container">
-            <h2 class="section-title">Vyberte si typ služby</h2>
-            <p class="section-subtitle">Každý typ má jiný přístup a úroveň personalizace</p>
+            <h2 class="section-title">Vyberte si rozsah služby</h2>
+            <p class="section-subtitle"></p>
             
             <div class="service-cards">
                 <div class="service-card service-card--standard">
@@ -310,16 +314,16 @@
                     </div>
                     <div class="service-content">
                         <div class="service-feature">
-                            <h4>Text a zpracování</h4>
-                            <p>1 varianta textu ve 2 zpracováních</p>
+                            <p>► 1 písnička podle zadání</p>
                         </div>
                         <div class="service-feature">
-                            <h4>Korekce textařem</h4>
-                            <p>Zběžné korekce (rýmy, nevhodná slova)</p>
+                            <p>► Zběžné korekce (rýmy, nevhodná slova)</p>
                         </div>
                         <div class="service-feature">
-                            <h4>Dodání</h4>
-                            <p>Obvykle do 24 hodin</p>
+                            <p>► Dodání do 2 pracovních dnů</p>
+                        </div>
+                        <div class="service-feature">
+                            <p>► Pokud písnička nesedne, máte 1 možnost opravy zdarma</p>
                         </div>
                     </div>
                     <div class="service-button">
@@ -334,16 +338,16 @@
                     </div>
                     <div class="service-content">
                         <div class="service-feature">
-                            <h4>Text a zpracování</h4>
-                            <p>2 varianty textů, celkem 4 zpracování</p>
+                            <p>► 2 různé verze písničky podle zadání</p>
                         </div>
                         <div class="service-feature">
-                            <h4>Korekce textařem</h4>
-                            <p>Detailní korekce (přepisování, ruční tvorba)</p>
+                            <p>► Detailní korekce (přepisování, ruční tvorba)</p>
                         </div>
                         <div class="service-feature">
-                            <h4>Dodání</h4>
-                            <p>Garantované do 24 hodin</p>
+                            <p>► Dodání do 24 hodin</p>
+                        </div>
+                        <div class="service-feature">
+                            <p>► Pokud písnička nesedne, máte 1 možnost opravy zdarma</p>
                         </div>
                     </div>
                     <div class="service-button">
@@ -358,16 +362,16 @@
                     </div>
                     <div class="service-content">
                         <div class="service-feature">
-                            <h4>Konzultace</h4>
-                            <p>Osobní konzultace s textařem</p>
+                            <p>► Osobní konzultace s textařem</p>
                         </div>
                         <div class="service-feature">
-                            <h4>Proces</h4>
-                            <p>Příprava textu a hudby s úpravami</p>
+                            <p>► Příprava textu ke schválení, následně tvorba hudby s úpravami</p>
                         </div>
                         <div class="service-feature">
-                            <h4>Dodání</h4>
-                            <p>Do 7 dnů od konzultace</p>
+                            <p>► 1 možnost přepracování textu, 1 možnost přepracování hudby</p>
+                        </div>
+                        <div class="service-feature">
+                            <p>► Obvykle do 7 dnů od konzultace</p>
                         </div>
                     </div>
                     <div class="service-button">
@@ -421,7 +425,7 @@
                         <span class="faq-icon">+</span>
                     </button>
                     <div class="faq-answer">
-                        <p>V případě, že vám první verze nesedne, zašleme druhou zdarma. Stačí nám napsat na <mailto>podpora@bardio.cz</mailto>.</p>
+                        <p>V případě, že vám první verze nesedne, zašleme druhou zdarma. Stačí nám napsat na <a href="mailto:podpora@bardio.cz">podpora@bardio.cz</a>.</p>
                     </div>
                 </div>
                 
@@ -490,24 +494,17 @@
                     <p>Vytváříme osobní písně na míru pro jakoukoliv příležitost. Pomocí technologií a pod dohledem textařů.</p>
                     <div class="contact-info">
                         <p><mailto>📧 podpora@bardio.cz</mailto></p>
-                        <p>📞 +420 XXX XXX XXX</p>
+                        <p>📞 +420 732 945 290</p>
                     </div>
                 </div>
                 
-                <div class="footer-section">
-                    <h4>Nejoblíbenější služby</h4>
-                    <ul>
-                        <li><a href="#services">Písničky na oslavu</a></li>
-                        <li><a href="#services">Písničky z lásky</a></li>
-                        <li><a href="#services">Dětské písničky</a></li>
-                    </ul>
-                </div>
+                
                 
                 <div class="footer-section">
-                    <h4>Společnost</h4>
+                    <h4>Stránky</h4>
                     <ul>
                         <li><a href="jak-to-funguje.html">Jak to funguje</a></li>
-                        <li><a href="#contact">Kontakt</a></li>
+                        <li><a href="kontakt.html">Kontakt</a></li>
                     </ul>
                 </div>
                 
@@ -515,8 +512,7 @@
                     <h4>Právní informace</h4>
                     <ul>
                         <li><a href="obchodni-podminky-bardio.html">Obchodní podmínky</a></li>
-                        <li><a href="#">GDPR</a></li>
-                        <li><a href="#">Cookies</a></li>
+                        <li><a href="zpracovani-osobnich-udaju.html">Zpracování osobních údajů</a></li>
                     </ul>
                 </div>
             </div>
@@ -539,4 +535,5 @@
 
     <script src="script.js"></script>
 </body>
+<script src="https://player.vimeo.com/api/player.js"></script>
 </html>

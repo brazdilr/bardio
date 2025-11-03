@@ -24,7 +24,7 @@ class AudioPlayer {
         this.duration = 30; // Default duration
         
         this.tracks = [
-            { title: 'Ukázka 1 - Popová píseň', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 30 },
+            { title: 'Veselý duet ke dni matek', file: 'https://media.bardio.cz/ukazka-1.mp3' },
             { title: 'Ukázka 2 - Akustická píseň', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 30 },
             { title: 'Ukázka 3 - Dětská píseň', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 25 }
         ];
@@ -238,8 +238,10 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-            const headerHeight = document.querySelector('.header').offsetHeight;
-            const audioPlayerHeight = document.getElementById('audio-player').offsetHeight;
+            const headerEl = document.querySelector('.header');
+            const headerHeight = headerEl ? headerEl.offsetHeight : 0;
+            const audioEl = document.getElementById('audio-player');
+            const audioPlayerHeight = audioEl ? audioEl.offsetHeight : 0;
             const offset = headerHeight + audioPlayerHeight + 20;
             
             window.scrollTo({
@@ -404,27 +406,28 @@ class MusicPlayer {
         this.audio = null;
         this.tracks = {};
         
-        // Definice skladeb podle kategorií
+        // Definice skladeb podle kategorií (klíče sjednocené s HTML)
         this.tracks = {
             pop: [
-                { title: 'Popová píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 30 },
-                { title: 'Popová píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 30 },
+                { title: 'Osobní duet ke dni matek', file: 'https://media.bardio.cz/ukazka-1.mp3', duration: 30 },
+                { title: 'K výročí svatby pro rodiče', file: 'https://media.bardio.cz/ukazka-3.mp3', duration: 30 },
                 { title: 'Popová píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 25 }
             ],
-            akusticka: [
-                { title: 'Akustická píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 28 },
-                { title: 'Akustická píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 25 },
-                { title: 'Akustická píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 27 }
+            rock: [
+                { title: 'Rockové přání pro kámoše Radka', file: 'https://media.bardio.cz/ukazka-2.mp3', duration: 28 },
+                { title: 'Metalová k svátku Agátě', file: 'https://media.bardio.cz/ukazka-8.mp3', duration: 26 }
             ],
-            detska: [
-                { title: 'Dětská píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 20 },
-                { title: 'Dětská píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 22 },
-                { title: 'Dětská píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 18 }
+            rap: [
+                { title: 'Pop rap pro naši mámu', file: 'https://media.bardio.cz/ukazka-4.mp3', duration: 25 }
             ],
-            svatebni: [
-                { title: 'Svatební píseň #1', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-2.mp3', duration: 26 },
-                { title: 'Svatební píseň #2', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-3.mp3', duration: 27 },
-                { title: 'Svatební píseň #3', file: 'https://yfoqiowdqqusnvbkyqhk.supabase.co/storage/v1/object/public/Ukazky-pisni/ukazka-1.mp3', duration: 24 }
+            dojemne: [
+                { title: 'Přání a vzpomínky babičce Anežce', file: 'https://media.bardio.cz/ukazka-5.mp3', duration: 27 }
+            ],
+            detske: [
+                { title: 'Pro Adélku, o dráčkovi', file: 'https://media.bardio.cz/ukazka-6.mp3', duration: 22 }
+            ],
+            dechovka: [
+                { title: 'Babičce k narozeninám', file: 'https://media.bardio.cz/ukazka-7.mp3', duration: 24 }
             ]
         };
         
