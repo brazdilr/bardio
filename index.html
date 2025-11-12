@@ -51,16 +51,17 @@
       <!-- End Meta Pixel -->
     
      <!-- Měření na 75 % scroll -->
-      <script>
-        document.addEventListener('scroll', function() {
-          if (window.Cookiebot?.consent?.marketing) {
-            // Jakmile uživatel doscrolluje na 75 % stránky
-            const scrollDepth = (window.scrollY + window.innerHeight) / document.body.scrollHeight;
-            if (scrollDepth >= 0.75 && !window.scrollTracked) {
-              fbq('trackCustom', 'Scrolled75');
-              window.scrollTracked = true; // aby se odeslalo jen jednou
+     <script>
+        document.addEventListener('scroll', function () {
+          try {
+            if (window.Cookiebot?.consent?.marketing && typeof fbq === 'function') {
+              const depth = (window.scrollY + window.innerHeight) / document.body.scrollHeight;
+              if (depth >= 0.75 && !window.scrollTracked) {
+                fbq('trackCustom', 'Scrolled75');
+                window.scrollTracked = true;
+              }
             }
-          }
+          } catch(e) { /* nic neodesílej */ }
         });
         </script>
         <!-- Měření na 75 % scroll -->
@@ -535,7 +536,7 @@
                     <div class="footer-logo">🎵 Bardio</div>
                     <p>Vytváříme osobní písně na míru pro jakoukoliv příležitost. Pomocí technologií a pod dohledem textařů.</p>
                     <div class="contact-info">
-                        <p><mailto>📧 podpora@bardio.cz</mailto></p>
+                        <p>📧 <a href="mailto:podpora@bardio.cz">podpora@bardio.cz</a></p>
                         <p>📞 +420 732 945 290</p>
                     </div>
                 </div>
@@ -577,5 +578,4 @@
 
     <script src="script.js"></script>
 </body>
-<script src="https://player.vimeo.com/api/player.js"></script>
 </html>
