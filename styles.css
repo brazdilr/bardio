@@ -744,6 +744,25 @@ body {
     gap: 1rem;
 }
 
+.payment-methods {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+}
+
+.payment-methods-img {
+    max-width: 100%;
+    height: auto;
+    opacity: 0.8;
+}
+
+@media (min-width: 901px) {
+    .payment-methods-img {
+        max-width: 400px;
+    }
+}
+
 .social-links {
     display: flex;
     gap: 1rem;
@@ -1045,6 +1064,11 @@ body {
     .footer-bottom {
         flex-direction: column;
         text-align: center;
+    }
+    
+    .payment-methods {
+        order: -1;
+        margin-bottom: 1rem;
     }
     
     .floating-audio-btn {
